@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Condenser — The Single Source of Truth for Construction Punch Lists</title>
+  <meta name="description" content="The Condenser streamlines punch list management for residential construction managers. Intake, condense, organize, communicate, and follow up — all from the field." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ========== RESET & BASE ========== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+    :root {
+      --g900: #141416;
+      --g850: #1a1a1d;
+      --surface: #1E1E22;
+      --surface-2: #25252A;
+      --g100: #2A2A2E;
+      --g200: #35353A;
+      --g300: #45454B;
+      --g400: #6E6E78;
+      --g500: #9A9AA4;
+      --g600: #B8B8C2;
+      --g700: #D4D4DC;
+      --white: #FFFFFF;
+      --mar: #7A1F2E;
+      --mar-light: #9B2D3F;
+      --mar-glow: rgba(122, 31, 46, 0.35);
+      --done: #22C55E;
+      --wip: #F59E0B;
+      --font: 'Libre Franklin', system-ui, -apple-system, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --max-w: 1200px;
+      --section-py: clamp(80px, 10vw, 120px);
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--g900);
+      color: var(--g700);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+    ul { list-style: none; }
+
+    .container {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    @media (min-width: 768px) {
+      .container { padding: 0 48px; }
+    }
+
+    /* ========== BUTTONS ========== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font);
+      font-weight: 600;
+      font-size: 16px;
+      letter-spacing: 0.02em;
+      padding: 14px 28px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.25s ease-out;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--mar);
+      color: var(--white);
+      box-shadow: 0 0 0 0 var(--mar-glow);
+    }
+    .btn-primary:hover {
+      background: var(--mar-light);
+      box-shadow: 0 0 32px 4px var(--mar-glow);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--white);
+      border: 1.5px solid var(--g200);
+    }
+    .btn-outline:hover {
+      border-color: var(--g400);
+      background: var(--surface);
+    }
+
+    /* ========== EYEBROW ========== */
+    .eyebrow {
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--mar-light);
+      margin-bottom: 16px;
+    }
+
+    /* ========== SECTION TITLES ========== */
+    .section-title {
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 900;
+      line-height: 1.15;
+      color: var(--white);
+      margin-bottom: 16px;
+    }
+
+    .section-sub {
+      font-size: 18px;
+      color: var(--g500);
+      max-width: 560px;
+      line-height: 1.65;
+    }
+
+    /* ========== NAVIGATION ========== */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(20, 20, 22, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--g100);
+      transition: background 0.3s ease;
+    }
+
+    .nav-inner {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    @media (min-width: 768px) {
+      .nav-inner { padding: 0 48px; }
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 900;
+      font-size: 18px;
+      color: var(--white);
+      letter-spacing: -0.02em;
+    }
+
+    .nav-logo-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--mar);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 900;
+      color: var(--white);
+      font-family: var(--mono);
+    }
+
+    .nav-links {
+      display: none;
+      align-items: center;
+      gap: 32px;
+    }
+
+    @media (min-width: 768px) {
+      .nav-links { display: flex; }
+    }
+
+    .nav-links a {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--g500);
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--white); }
+
+    .nav-cta {
+      font-size: 14px !important;
+      padding: 8px 20px !important;
+    }
+
+    .mobile-menu-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--g500);
+    }
+    @media (min-width: 768px) {
+      .mobile-menu-btn { display: none; }
+    }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 64px;
+      left: 0;
+      right: 0;
+      background: var(--g900);
+      border-bottom: 1px solid var(--g100);
+      padding: 24px;
+      z-index: 99;
+    }
+    .mobile-menu.open { display: block; }
+    .mobile-menu a {
+      display: block;
+      padding: 12px 0;
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--g600);
+      border-bottom: 1px solid var(--g100);
+    }
+    .mobile-menu a:last-child { border: none; }
+
+    /* ========== HERO ========== */
+    .hero {
+      padding: 160px 0 var(--section-py);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -200px;
+      right: -200px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, var(--mar-glow) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      border: 1px solid var(--g100);
+      border-radius: 100px;
+      padding: 6px 16px 6px 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--g600);
+      margin-bottom: 32px;
+    }
+
+    .hero-badge-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--done);
+      border-radius: 50%;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+      50% { opacity: 0.8; box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+    }
+
+    .hero h1 {
+      font-size: clamp(40px, 6vw, 72px);
+      font-weight: 900;
+      line-height: 1.05;
+      color: var(--white);
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+      max-width: 720px;
+    }
+
+    .hero h1 span {
+      color: var(--mar-light);
+    }
+
+    .hero-desc {
+      font-size: clamp(16px, 2vw, 20px);
+      color: var(--g500);
+      max-width: 520px;
+      line-height: 1.7;
+      margin-bottom: 40px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 64px;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, auto);
+      gap: 48px;
+      padding-top: 48px;
+      border-top: 1px solid var(--g100);
+      max-width: max-content;
+    }
+
+    .hero-stat-value {
+      font-family: var(--mono);
+      font-size: clamp(28px, 4vw, 36px);
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .hero-stat-label {
+      font-size: 13px;
+      color: var(--g400);
+      letter-spacing: 0.02em;
+    }
+
+    @media (max-width: 640px) {
+      .hero-stats { gap: 32px; }
+    }
+
+    /* ========== WORKFLOW ========== */
+    .workflow {
+      padding: var(--section-py) 0;
+      background: var(--g850);
+      border-top: 1px solid var(--g100);
+      border-bottom: 1px solid var(--g100);
+    }
+
+    .workflow-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .workflow-header .section-sub {
+      margin: 0 auto;
+    }
+
+    .workflow-pipeline {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 2px;
+      background: var(--g100);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    @media (max-width: 900px) {
+      .workflow-pipeline {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .wf-step {
+      background: var(--surface);
+      padding: 32px 24px;
+      position: relative;
+      transition: background 0.25s ease;
+    }
+
+    .wf-step:hover {
+      background: var(--surface-2);
+    }
+
+    .wf-step-num {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--mar-light);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .wf-step-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 10px;
+    }
+
+    .wf-step-desc {
+      font-size: 14px;
+      color: var(--g500);
+      line-height: 1.6;
+    }
+
+    .wf-step-icon {
+      font-size: 28px;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    /* ========== FEATURES ========== */
+    .features {
+      padding: var(--section-py) 0;
+    }
+
+    .features-header {
+      margin-bottom: 64px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      background: var(--g100);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    @media (max-width: 900px) {
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .features-grid { grid-template-columns: 1fr; }
+    }
+
+    .feature-card {
+      background: var(--surface);
+      padding: 32px 28px;
+      transition: background 0.25s ease;
+    }
+
+    .feature-card:hover {
+      background: var(--surface-2);
+    }
+
+    .feature-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--g900);
+      border: 1px solid var(--g200);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    .feature-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 8px;
+    }
+
+    .feature-desc {
+      font-size: 14px;
+      color: var(--g500);
+      line-height: 1.6;
+    }
+
+    /* ========== BUILT FOR FIELD ========== */
+    .field-section {
+      padding: var(--section-py) 0;
+      background: var(--g850);
+      border-top: 1px solid var(--g100);
+      border-bottom: 1px solid var(--g100);
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+
+    @media (max-width: 768px) {
+      .field-grid {
+        grid-template-columns: 1fr;
+        gap: 48px;
+      }
+    }
+
+    .field-list {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .field-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .field-item-icon {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      background: var(--surface);
+      border: 1px solid var(--g200);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .field-item-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+
+    .field-item-desc {
+      font-size: 14px;
+      color: var(--g500);
+      line-height: 1.55;
+    }
+
+    /* Phone Mockup */
+    .phone-mockup {
+      width: 280px;
+      margin: 0 auto;
+      background: var(--g900);
+      border: 2px solid var(--g200);
+      border-radius: 32px;
+      padding: 12px;
+      position: relative;
+      box-shadow: 0 32px 80px rgba(0, 0, 0, 0.5), 0 0 60px var(--mar-glow);
+    }
+
+    .phone-notch {
+      width: 100px;
+      height: 24px;
+      background: var(--g900);
+      border-radius: 0 0 16px 16px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    .phone-screen {
+      background: var(--surface);
+      border-radius: 20px;
+      padding: 16px;
+      min-height: 420px;
+      overflow: hidden;
+    }
+
+    .mock-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .mock-title {
+      font-size: 15px;
+      font-weight: 900;
+      color: var(--white);
+      letter-spacing: -0.02em;
+    }
+
+    .mock-subtitle {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--g400);
+      margin-top: 4px;
+    }
+
+    .mock-trade-header {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--g500);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding-bottom: 6px;
+      border-bottom: 2px solid var(--g200);
+      margin-bottom: 8px;
+      margin-top: 16px;
+    }
+
+    .mock-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--g100);
+    }
+
+    .mock-checkbox {
+      width: 16px;
+      height: 16px;
+      border-radius: 3px;
+      border: 1.5px solid var(--g300);
+      flex-shrink: 0;
+    }
+
+    .mock-checkbox.done {
+      background: var(--done);
+      border-color: var(--done);
+    }
+
+    .mock-checkbox.wip {
+      background: var(--wip);
+      border-color: var(--wip);
+    }
+
+    .mock-item-text {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--g700);
+      flex: 1;
+    }
+
+    .mock-tag {
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 600;
+      background: var(--g900);
+      color: var(--g500);
+      padding: 2px 6px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .mock-tag.hot {
+      color: #EF4444;
+    }
+
+    /* ========== TRADES SECTION ========== */
+    .trades-section {
+      padding: var(--section-py) 0;
+    }
+
+    .trades-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .trades-header .section-sub {
+      margin: 0 auto;
+    }
+
+    .trades-scroll {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .trade-chip {
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--g600);
+      background: var(--surface);
+      border: 1px solid var(--g100);
+      padding: 8px 16px;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .trade-chip:hover {
+      border-color: var(--g300);
+      color: var(--white);
+      background: var(--surface-2);
+    }
+
+    /* ========== CTA SECTION ========== */
+    .cta-section {
+      padding: var(--section-py) 0;
+      background: var(--g850);
+      border-top: 1px solid var(--g100);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      bottom: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, var(--mar-glow) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .cta-section .section-title {
+      max-width: 600px;
+      margin: 0 auto 16px;
+    }
+
+    .cta-section .section-sub {
+      margin: 0 auto 40px;
+      text-align: center;
+    }
+
+    /* ========== FOOTER ========== */
+    .footer {
+      padding: 48px 0 32px;
+      border-top: 1px solid var(--g100);
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .footer-brand-name {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--g600);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: var(--g400);
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--g600); }
+
+    .footer-copy {
+      width: 100%;
+      text-align: center;
+      font-size: 12px;
+      color: var(--g400);
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid var(--g100);
+    }
+
+    .footer-copy span {
+      font-family: var(--mono);
+    }
+
+    /* ========== ANIMATIONS ========== */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ========== REDUCED MOTION ========== */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+      .fade-up { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== NAVIGATION ===== -->
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo" aria-label="The Condenser home">
+        <div class="nav-logo-icon">C</div>
+        The Condenser
+      </a>
+      <div class="nav-links">
+        <a href="#workflow">Workflow</a>
+        <a href="#features">Features</a>
+        <a href="#field">Built for Field</a>
+        <a href="#trades">Trades</a>
+        <a href="https://the-condenser-production.up.railway.app/" class="btn btn-primary nav-cta">Launch App</a>
+      </div>
+      <button class="mobile-menu-btn" aria-label="Toggle menu" aria-expanded="false" onclick="toggleMenu()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="#workflow" onclick="toggleMenu()">Workflow</a>
+      <a href="#features" onclick="toggleMenu()">Features</a>
+      <a href="#field" onclick="toggleMenu()">Built for Field</a>
+      <a href="#trades" onclick="toggleMenu()">Trades</a>
+      <a href="https://the-condenser-production.up.railway.app/">Launch App</a>
+    </div>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content fade-up">
+        <div class="hero-badge">
+          <span class="hero-badge-dot"></span>
+          Built for the jobsite
+        </div>
+        <h1>Stop chasing<br/>punch lists.<br/><span>Condense them.</span></h1>
+        <p class="hero-desc">
+          The single source of truth for residential construction punch lists. Intake from any source, auto-classify by trade, communicate to partners, and close items out &mdash; all from your phone in the field.
+        </p>
+        <div class="hero-actions">
+          <a href="https://the-condenser-production.up.railway.app/" class="btn btn-primary">
+            Launch The Condenser
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+          </a>
+          <a href="#workflow" class="btn btn-outline">See How It Works</a>
+        </div>
+        <div class="hero-stats">
+          <div>
+            <div class="hero-stat-value">16</div>
+            <div class="hero-stat-label">Trade categories</div>
+          </div>
+          <div>
+            <div class="hero-stat-value">5</div>
+            <div class="hero-stat-label">Phase workflow</div>
+          </div>
+          <div>
+            <div class="hero-stat-value">12</div>
+            <div class="hero-stat-label">Purpose-built screens</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== WORKFLOW ===== -->
+  <section class="workflow" id="workflow">
+    <div class="container">
+      <div class="workflow-header fade-up">
+        <div class="eyebrow">Core Pipeline</div>
+        <h2 class="section-title">Five phases. Zero guesswork.</h2>
+        <p class="section-sub">Every punch list follows the same disciplined path &mdash; from raw intake to confirmed resolution. No items fall through the cracks.</p>
+      </div>
+      <div class="workflow-pipeline fade-up">
+        <div class="wf-step">
+          <span class="wf-step-icon">&#x1F4E5;</span>
+          <div class="wf-step-num">Phase 01</div>
+          <div class="wf-step-title">Intake</div>
+          <div class="wf-step-desc">Upload PDFs, snap photos, capture voice notes, or type manually. Every source gets labeled and tracked.</div>
+        </div>
+        <div class="wf-step">
+          <span class="wf-step-icon">&#x1F9EA;</span>
+          <div class="wf-step-num">Phase 02</div>
+          <div class="wf-step-title">Condense</div>
+          <div class="wf-step-desc">AI extracts individual items, classifies by trade, and auto-assigns to the right partner using your field language.</div>
+        </div>
+        <div class="wf-step">
+          <span class="wf-step-icon">&#x1F4CB;</span>
+          <div class="wf-step-num">Phase 03</div>
+          <div class="wf-step-title">Organize</div>
+          <div class="wf-step-desc">Master list grouped by trade. Filter by source, status, or priority. Hot items and aging flags surface what matters.</div>
+        </div>
+        <div class="wf-step">
+          <span class="wf-step-icon">&#x1F4E8;</span>
+          <div class="wf-step-num">Phase 04</div>
+          <div class="wf-step-title">Communicate</div>
+          <div class="wf-step-desc">Send items grouped by trade partner via email, text, or clipboard. Customizable templates with your sign-off.</div>
+        </div>
+        <div class="wf-step">
+          <span class="wf-step-icon">&#x1F50D;</span>
+          <div class="wf-step-num">Phase 05</div>
+          <div class="wf-step-title">Follow-Up</div>
+          <div class="wf-step-desc">Re-walk the house, update statuses, add new items. The list is always current, the record always complete.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FEATURES ===== -->
+  <section class="features" id="features">
+    <div class="container">
+      <div class="features-header fade-up">
+        <div class="eyebrow">Capabilities</div>
+        <h2 class="section-title">Every tool a CM needs.<br/>Nothing they don't.</h2>
+        <p class="section-sub">Purpose-built for residential construction managers who manage 5&ndash;20 active lots and need speed over features.</p>
+      </div>
+      <div class="features-grid fade-up">
+        <div class="feature-card">
+          <div class="feature-icon">&#x1F3D7;</div>
+          <div class="feature-title">Trade Auto-Classification</div>
+          <div class="feature-desc">Field language aliases, keyword mapping, and community defaults auto-route every item to the right trade category.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#x1F525;</div>
+          <div class="feature-title">Priority &amp; Aging System</div>
+          <div class="feature-desc">Mark items HOT for immediate attention. Items untouched for 72+ hours get flagged as stale. Nothing hides.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#x1F399;</div>
+          <div class="feature-title">Voice Capture</div>
+          <div class="feature-desc">Speak your punch items while walking the house. Voice is transcribed, split into individual items, and classified.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#x1F4C2;</div>
+          <div class="feature-title">File Management</div>
+          <div class="feature-desc">Organize by project with five folder categories: Inspection Reports, Photos, Plans, Permits, and Correspondence.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#x1F4E7;</div>
+          <div class="feature-title">Template Messaging</div>
+          <div class="feature-desc">Customizable email and text templates with dynamic variables. Send complete trade-grouped lists in one tap.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#x1F4D2;</div>
+          <div class="feature-title">Trade Reference Directory</div>
+          <div class="feature-desc">Searchable card-based directory with contacts, companies, and processing managers. CSV import supported.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#x1F6B6;</div>
+          <div class="feature-title">Follow-Up Walk Mode</div>
+          <div class="feature-desc">Pick a project, re-walk the house with date and walker metadata. Update statuses and add items in real-time.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#x1F4F1;</div>
+          <div class="feature-title">Mobile-First PWA</div>
+          <div class="feature-desc">Designed for one-handed iPhone use in the field. Works offline, installs like a native app, survives bad signal.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#x1F4E4;</div>
+          <div class="feature-title">Share &amp; Export</div>
+          <div class="feature-desc">Copy, save to file, text, email, print, or use native share. Get the list out however your partners need it.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== BUILT FOR THE FIELD ===== -->
+  <section class="field-section" id="field">
+    <div class="container">
+      <div class="field-grid">
+        <div class="fade-up">
+          <div class="eyebrow">Designed for Reality</div>
+          <h2 class="section-title">Built where<br/>houses get built.</h2>
+          <p class="section-sub" style="margin-bottom: 40px;">
+            Not another desktop dashboard. The Condenser was designed for the construction manager walking lots in the Texas sun with one hand free and spotty cell signal.
+          </p>
+          <div class="field-list">
+            <div class="field-item">
+              <div class="field-item-icon">&#x1F4F4;</div>
+              <div>
+                <div class="field-item-title">Offline-First</div>
+                <div class="field-item-desc">Local database with full read/write. Syncs when you're back on signal. Never lose work.</div>
+              </div>
+            </div>
+            <div class="field-item">
+              <div class="field-item-icon">&#x1F319;</div>
+              <div>
+                <div class="field-item-title">Dark Theme Only</div>
+                <div class="field-item-desc">Reduces glare on bright jobsites. High contrast text stays readable under direct sunlight.</div>
+              </div>
+            </div>
+            <div class="field-item">
+              <div class="field-item-icon">&#x1F4CF;</div>
+              <div>
+                <div class="field-item-title">680px Max Width</div>
+                <div class="field-item-desc">Optimized for phone screens. No wasted space, no horizontal scroll, no pinch-to-zoom.</div>
+              </div>
+            </div>
+            <div class="field-item">
+              <div class="field-item-icon">&#x1F446;</div>
+              <div>
+                <div class="field-item-title">Explicit Touch Targets</div>
+                <div class="field-item-desc">No swipe gestures, no long-press. Every action is a visible button. Gloves-compatible.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="fade-up">
+          <div class="phone-mockup">
+            <div class="phone-notch"></div>
+            <div class="phone-screen">
+              <div class="mock-header">
+                <div class="mock-title">529 Madelines Garden</div>
+                <div class="mock-subtitle">Patterson Ranch &middot; 24 items</div>
+              </div>
+
+              <div class="mock-trade-header">PAINTING &amp; TOUCH-UP</div>
+              <div class="mock-item">
+                <div class="mock-checkbox"></div>
+                <span class="mock-item-text">Touch up nicks on stair risers</span>
+                <span class="mock-tag hot">&#x203C;</span>
+              </div>
+              <div class="mock-item">
+                <div class="mock-checkbox done"></div>
+                <span class="mock-item-text">Repaint garage door trim</span>
+              </div>
+
+              <div class="mock-trade-header">PLUMBING</div>
+              <div class="mock-item">
+                <div class="mock-checkbox wip"></div>
+                <span class="mock-item-text">Master bath faucet drip</span>
+              </div>
+              <div class="mock-item">
+                <div class="mock-checkbox"></div>
+                <span class="mock-item-text">Kitchen sink disposal rattle</span>
+              </div>
+
+              <div class="mock-trade-header">HVAC</div>
+              <div class="mock-item">
+                <div class="mock-checkbox"></div>
+                <span class="mock-item-text">Register cover loose in hallway</span>
+                <span class="mock-tag">&#x23F3;</span>
+              </div>
+              <div class="mock-item">
+                <div class="mock-checkbox done"></div>
+                <span class="mock-item-text">Thermostat wiring check</span>
+              </div>
+
+              <div class="mock-trade-header">TRIM / BASEBOARD</div>
+              <div class="mock-item">
+                <div class="mock-checkbox"></div>
+                <span class="mock-item-text">Gap in baseboard at master closet</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TRADES ===== -->
+  <section class="trades-section" id="trades">
+    <div class="container">
+      <div class="trades-header fade-up">
+        <div class="eyebrow">Trade Categories</div>
+        <h2 class="section-title">16 trades. Auto-routed.</h2>
+        <p class="section-sub">Every punch item gets classified and sent to the right partner. No manual sorting. No missed handoffs.</p>
+      </div>
+      <div class="trades-scroll fade-up">
+        <span class="trade-chip">Painting &amp; Touch-Up</span>
+        <span class="trade-chip">Trim / Baseboard / Caulk</span>
+        <span class="trade-chip">Stairs / Flooring</span>
+        <span class="trade-chip">Plumbing</span>
+        <span class="trade-chip">HVAC</span>
+        <span class="trade-chip">Door Hardware</span>
+        <span class="trade-chip">Drywall</span>
+        <span class="trade-chip">Concrete</span>
+        <span class="trade-chip">Framing / Siding</span>
+        <span class="trade-chip">Windows</span>
+        <span class="trade-chip">Garage</span>
+        <span class="trade-chip">Garage Door</span>
+        <span class="trade-chip">General Cleaning</span>
+        <span class="trade-chip">Landscaping</span>
+        <span class="trade-chip">Gutters</span>
+        <span class="trade-chip">Electrical</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CTA ===== -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-content fade-up">
+        <div class="eyebrow">Get Started</div>
+        <h2 class="section-title">Your punch list<br/>deserves better.</h2>
+        <p class="section-sub">Stop juggling spreadsheets, sticky notes, and group texts. The Condenser puts everything in one place &mdash; built by a CM, for CMs.</p>
+        <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+          <a href="https://the-condenser-production.up.railway.app/" class="btn btn-primary">
+            Launch The Condenser
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <div class="nav-logo-icon" style="width:28px;height:28px;font-size:13px;">C</div>
+          <span class="footer-brand-name">The Condenser</span>
+        </div>
+        <div class="footer-links">
+          <a href="#workflow">Workflow</a>
+          <a href="#features">Features</a>
+          <a href="#field">Built for Field</a>
+          <a href="https://the-condenser-production.up.railway.app/">Launch App</a>
+        </div>
+      </div>
+      <div class="footer-copy">
+        <span>&copy; 2026</span> The Condenser System &mdash; Built for Paige Beltran &amp; every CM who walks houses.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile menu toggle
+    function toggleMenu() {
+      const menu = document.getElementById('mobileMenu');
+      const btn = document.querySelector('.mobile-menu-btn');
+      const isOpen = menu.classList.toggle('open');
+      btn.setAttribute('aria-expanded', isOpen);
+    }
+
+    // Intersection Observer for fade-up animations
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
+    );
+
+    document.querySelectorAll('.fade-up').forEach((el) => observer.observe(el));
+  </script>
+
+</body>
+</html>
