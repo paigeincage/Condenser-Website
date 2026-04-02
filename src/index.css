@@ -1,23 +1,25 @@
 @import "tailwindcss";
 
 @theme {
-  --color-g900: #141416;
-  --color-g850: #1a1a1d;
-  --color-surface: #1E1E22;
-  --color-surface-2: #25252A;
-  --color-g100: #2A2A2E;
-  --color-g200: #35353A;
-  --color-g300: #45454B;
-  --color-g400: #6E6E78;
-  --color-g500: #9A9AA4;
-  --color-g600: #B8B8C2;
-  --color-g700: #D4D4DC;
-  --color-mar: #7A1F2E;
-  --color-mar-light: #9B2D3F;
+  --color-dark: #0A0A0A;
+  --color-dark-card: #141414;
+  --color-dark-card-2: #1A1A1A;
+  --color-dark-border: #222222;
+  --color-copper: #C45A2C;
+  --color-copper-light: #D4703C;
+  --color-copper-dark: #A84A20;
+  --color-copper-bg: rgba(196, 90, 44, 0.08);
+  --color-copper-bg-m: rgba(196, 90, 44, 0.15);
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #999999;
+  --color-text-muted: #666666;
+  --color-text-dark: #333333;
+  --color-surface-orange: #C45A2C;
   --color-done: #22C55E;
   --color-wip: #F59E0B;
+  --font-display: 'Barlow Condensed', sans-serif;
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-mono: 'Roboto Mono', monospace;
+  --font-mono: 'JetBrains Mono', monospace;
 }
 
 html {
@@ -28,10 +30,13 @@ html {
 
 body {
   font-family: var(--font-sans);
+  background: #0A0A0A;
+  color: #FFFFFF;
+  margin: 0;
 }
 
 ::selection {
-  background: #7A1F2E;
+  background: #C45A2C;
   color: white;
 }
 
@@ -46,4 +51,8 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-up { animation: none; opacity: 1; }
+}
+
+.font-display {
+  font-family: 'Barlow Condensed', sans-serif;
 }
