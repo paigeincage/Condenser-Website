@@ -7,6 +7,10 @@
   --color-dark-warm: #1C1917;
   --color-dark-cool: #111318;
   --color-dark-border: #222222;
+  --color-light: #FAFAF8;
+  --color-light-warm: #F0EDEA;
+  --color-light-card: #FFFFFF;
+  --color-light-border: #E8E5E1;
   --color-copper: #C45A2C;
   --color-copper-light: #D4703C;
   --color-copper-dark: #A84A20;
@@ -16,6 +20,9 @@
   --color-text-secondary: #999999;
   --color-text-muted: #666666;
   --color-text-dark: #333333;
+  --color-text-on-light: #1A1A1A;
+  --color-text-on-light-2: #555555;
+  --color-text-on-light-muted: #999999;
   --color-surface-orange: #C45A2C;
   --color-done: #22C55E;
   --color-wip: #F59E0B;
@@ -32,8 +39,8 @@ html {
 
 body {
   font-family: var(--font-sans);
-  background: #0A0A0A;
-  color: #FFFFFF;
+  background: #FAFAF8;
+  color: #1A1A1A;
   margin: 0;
 }
 
@@ -51,17 +58,14 @@ body {
   animation: fade-up 0.7s ease-out both;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .animate-fade-up { animation: none; opacity: 1; }
-}
-
 @keyframes kenBurns {
   0% { transform: scale(1) translate(0, 0); }
   100% { transform: scale(1.15) translate(-2%, -1%); }
 }
 
-/* When video loads, hide the fallback photo behind it */
-video:not([src=""]) + div { z-index: -1; }
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up { animation: none; opacity: 1; }
+}
 
 .font-display {
   font-family: 'Barlow Condensed', sans-serif;
