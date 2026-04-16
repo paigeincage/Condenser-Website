@@ -3,7 +3,7 @@ import { motion, useInView, AnimatePresence } from "framer-motion"
 import {
   ArrowRight, Menu, X, Phone, Mail, MapPin, ChevronDown, ChevronUp,
   ClipboardList, Mic, Smartphone, Zap, Shield, BarChart3, Star, Check,
-  FileText, WifiOff, MessageSquare, Send, MessageCircle, Sparkles,
+  Send, MessageCircle, Sparkles,
   Camera, AlertTriangle, User, DollarSign, Cloud, PenLine, Calendar,
   Headphones, BookOpen, Users,
 } from "lucide-react"
