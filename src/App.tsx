@@ -20,7 +20,9 @@ import {
   FileText,
   WifiOff,
   MessageSquare,
-  Lock,
+  Send,
+  MessageCircle,
+  Sparkles,
 } from "lucide-react"
 
 const APP_URL = "https://the-condenser-production.up.railway.app/home"
@@ -73,8 +75,8 @@ const FEATURES = [
     img: "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=600&h=400&fit=crop",
   },
   {
-    title: "Smart Communication",
-    desc: "Send grouped items to trade partners via email or text with auto-formatted templates. One tap — done.",
+    title: "One-Tap Export",
+    desc: "The first construction app that sends formatted punch lists directly via iMessage, SMS, or email — one tap, straight to the trade. No other app does this.",
     img: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=600&h=400&fit=crop",
   },
 ]
@@ -97,7 +99,7 @@ const TESTIMONIALS = [
     name: "Marcus T.",
     role: "Senior CM",
     company: "Summit Builders",
-    text: "Trade auto-classification alone saves me an hour a day. Items route themselves to the right crew without me touching anything.",
+    text: "The one-tap export changed everything. I finish a walkthrough, hit send, and every trade has their list before I leave the lot. Nothing else does this.",
   },
   {
     name: "Rachel D.",
@@ -147,8 +149,8 @@ const FAQS = [
     a: "Absolutely. Upload PDFs, paste text, or use voice capture. The system auto-classifies every item by trade.",
   },
   {
-    q: "How does trade auto-classification work?",
-    a: "We use field-language aliases and keyword mapping trained on real construction punch lists. Items route to the correct trade automatically — no manual sorting.",
+    q: "How does one-tap export work?",
+    a: "Once your list is ready, hit send. Items are auto-grouped by trade and formatted into a clean message. Choose iMessage, SMS, or email — each trade gets exactly their items. One tap, done. No other construction app offers this.",
   },
   {
     q: "Is my data secure?",
@@ -156,7 +158,7 @@ const FAQS = [
   },
   {
     q: "Can I share lists with trade partners?",
-    a: "One tap sends grouped items by trade via email or text. Partners get clean, formatted lists — no app download required on their end.",
+    a: "That's the whole point. One tap sends grouped items by trade via iMessage, text, or email. Partners get clean, formatted lists — no app download required on their end.",
   },
 ]
 
@@ -164,31 +166,31 @@ const FEATURES_DETAIL = [
   { icon: <ClipboardList size={24} />, title: "Punch List Management", desc: "Every item from intake to close-out" },
   { icon: <Mic size={24} />, title: "Voice Capture", desc: "Speak items while walking the house" },
   { icon: <Zap size={24} />, title: "Auto-Classification", desc: "Items route to the right trade" },
-  { icon: <Smartphone size={24} />, title: "Mobile-First PWA", desc: "Works offline, installs like a native app" },
+  { icon: <Send size={24} />, title: "One-Tap Export", desc: "iMessage, SMS, or email — industry first" },
   { icon: <Shield size={24} />, title: "Offline-First", desc: "Never lose data in the field" },
   { icon: <BarChart3 size={24} />, title: "Priority & Aging", desc: "72-hour flags keep HOT items visible" },
 ]
 
 /* ── Interactive phone data ── */
 const PHONE_GROUPS = [
-  { trade: "PAINTING & TOUCH-UP", items: [
+  { trade: "PAINTING", tradeSendTo: "Mike's Painting", items: [
     { id: "p1", text: "Touch up nicks on stair risers", hot: true },
     { id: "p2", text: "Repaint garage door trim" },
   ]},
-  { trade: "PLUMBING", items: [
+  { trade: "PLUMBING", tradeSendTo: "Ray's Plumbing", items: [
     { id: "pl1", text: "Master bath faucet drip" },
     { id: "pl2", text: "Kitchen sink disposal rattle" },
   ]},
-  { trade: "HVAC", items: [
+  { trade: "HVAC", tradeSendTo: "Comfort Air Co", items: [
     { id: "h1", text: "Register cover loose in hallway", aging: true },
     { id: "h2", text: "Thermostat wiring check" },
   ]},
-  { trade: "TRIM / BASEBOARD", items: [
+  { trade: "TRIM", tradeSendTo: "Ace Trim & Finish", items: [
     { id: "t1", text: "Gap in baseboard at master closet" },
   ]},
 ]
 const TOTAL_PHONE_ITEMS = PHONE_GROUPS.reduce((sum, g) => sum + g.items.length, 0)
-const GATE_THRESHOLD = 4
+const COMPLETE_THRESHOLD = 3
 
 /* ── FAQ Item ── */
 function FaqItem({ q, a }: { q: string; a: string }) {
@@ -226,20 +228,21 @@ export default function App() {
 
   /* Interactive phone state */
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set())
+  const [showExport, setShowExport] = useState(false)
   const [showGate, setShowGate] = useState(false)
   const [emailSubmitted, setEmailSubmitted] = useState(false)
   const [demoEmail, setDemoEmail] = useState("")
   const [showConfetti, setShowConfetti] = useState(false)
-  const [firstClickTime, setFirstClickTime] = useState<number | null>(null)
-  const [gateSeconds, setGateSeconds] = useState(0)
+  const [showSentConfirm, setShowSentConfirm] = useState(false)
   const [showHint, setShowHint] = useState(true)
+  const [selectedChannel, setSelectedChannel] = useState("")
 
-  const allCleared = checkedItems.size === TOTAL_PHONE_ITEMS && emailSubmitted
+  const progressPercent = Math.min((checkedItems.size / COMPLETE_THRESHOLD) * 100, 100)
+  const isComplete = checkedItems.size >= COMPLETE_THRESHOLD
 
   function handlePhoneItemClick(id: string) {
-    if (showGate && !emailSubmitted) return
+    if (showExport || showGate) return
 
-    if (!firstClickTime) setFirstClickTime(Date.now())
     if (showHint) setShowHint(false)
 
     const next = new Set(checkedItems)
@@ -250,10 +253,22 @@ export default function App() {
     }
     setCheckedItems(next)
 
-    if (next.size >= GATE_THRESHOLD && !emailSubmitted && !showGate) {
-      const seconds = firstClickTime ? Math.round((Date.now() - firstClickTime) / 1000) : 0
-      setGateSeconds(seconds)
-      setTimeout(() => setShowGate(true), 500)
+    if (next.size >= COMPLETE_THRESHOLD && !showExport) {
+      setTimeout(() => setShowExport(true), 600)
+    }
+  }
+
+  function handleSendClick(channel: string) {
+    setSelectedChannel(channel)
+    if (emailSubmitted) {
+      // Already unlocked — simulate send
+      setShowExport(false)
+      setShowSentConfirm(true)
+      setShowConfetti(true)
+      setTimeout(() => setShowConfetti(false), 2000)
+      setTimeout(() => setShowSentConfirm(false), 3000)
+    } else {
+      setShowGate(true)
     }
   }
 
@@ -262,8 +277,11 @@ export default function App() {
     if (!demoEmail.trim()) return
     setEmailSubmitted(true)
     setShowGate(false)
+    setShowExport(false)
     setShowConfetti(true)
+    setShowSentConfirm(true)
     setTimeout(() => setShowConfetti(false), 2000)
+    setTimeout(() => setShowSentConfirm(false), 3500)
   }
 
   useEffect(() => {
@@ -351,7 +369,9 @@ export default function App() {
             </motion.div>
           </div>
 
-          {/* ── Interactive Phone Mockup ── */}
+          {/* ══════════════════════════════════════════════ */}
+          {/* ── INTERACTIVE PHONE MOCKUP ──────────────── */}
+          {/* ══════════════════════════════════════════════ */}
           <motion.div
             initial={{ opacity: 0, x: 60 }}
             animate={{ opacity: 1, x: 0 }}
@@ -360,130 +380,238 @@ export default function App() {
           >
             <div className="w-[280px] rounded-[36px] border-2 border-white/20 bg-dark p-3 shadow-[0_32px_80px_rgba(0,0,0,0.5)]">
               <div className="mx-auto h-6 w-24 rounded-b-2xl bg-dark" />
-              <div className="relative min-h-[440px] overflow-hidden rounded-[24px] bg-dark-card p-5">
+              <div className="relative min-h-[480px] overflow-hidden rounded-[24px] bg-dark-card">
 
-                {/* Progress bar */}
-                <div className="mb-3 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
-                  <motion.div
-                    className="h-full rounded-full bg-gradient-to-r from-copper to-emerald-500"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${(checkedItems.size / TOTAL_PHONE_ITEMS) * 100}%` }}
-                    transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                  />
-                </div>
+                {/* ── Phone header + progress ── */}
+                <div className="sticky top-0 z-20 bg-dark-card px-5 pt-5 pb-3">
+                  {/* Progress bar */}
+                  <div className="relative mb-3 h-2 w-full overflow-hidden rounded-full bg-white/10">
+                    <motion.div
+                      className="h-full rounded-full"
+                      style={{
+                        background: isComplete
+                          ? "linear-gradient(90deg, #22C55E, #16A34A)"
+                          : "linear-gradient(90deg, #C45A2C, #D4703C)",
+                      }}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${progressPercent}%` }}
+                      transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                    />
+                    {/* Glow when complete */}
+                    {isComplete && (
+                      <motion.div
+                        className="absolute inset-0 rounded-full"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: [0, 0.6, 0] }}
+                        transition={{ duration: 1.2, repeat: 2 }}
+                        style={{ boxShadow: "0 0 12px #22C55E, 0 0 24px #22C55E" }}
+                      />
+                    )}
+                  </div>
 
-                <div className="mb-4 text-center">
-                  <div className="text-base font-bold tracking-tight text-white">742 Oakmont Drive</div>
-                  <div className="mt-1 font-mono text-[10px] text-text-muted">
-                    Cedar Falls &middot; <span className="text-copper">{checkedItems.size}/{TOTAL_PHONE_ITEMS} cleared</span>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-sm font-bold tracking-tight text-white">742 Oakmont Drive</div>
+                      <div className="mt-0.5 font-mono text-[9px] text-text-muted">Cedar Falls</div>
+                    </div>
+                    <div className="text-right">
+                      <motion.div
+                        className={`font-display text-lg font-900 ${isComplete ? "text-emerald-400" : "text-copper"}`}
+                        key={Math.round(progressPercent)}
+                        initial={{ scale: 1.3 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: "spring", stiffness: 400 }}
+                      >
+                        {Math.round(progressPercent)}%
+                      </motion.div>
+                      <div className="font-mono text-[8px] text-text-muted">
+                        {checkedItems.size}/{TOTAL_PHONE_ITEMS} items
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                {/* Tap hint */}
-                <AnimatePresence>
-                  {showHint && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="mb-3 text-center"
-                    >
-                      <span className="inline-block animate-pulse rounded-full bg-copper/20 px-3 py-1 font-mono text-[9px] text-copper">
-                        &#9758; Tap items to check them off
-                      </span>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                {/* ── Scrollable items area ── */}
+                <div className="px-5 pb-5">
+                  {/* Tap hint */}
+                  <AnimatePresence>
+                    {showHint && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="mb-3 text-center"
+                      >
+                        <span className="inline-block animate-pulse rounded-full bg-copper/20 px-3 py-1 font-mono text-[9px] text-copper">
+                          &#9758; Tap items to check them off
+                        </span>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
 
-                {/* Punch list items */}
-                {PHONE_GROUPS.map(group => {
-                  const groupChecked = group.items.filter(i => checkedItems.has(i.id)).length
-                  return (
-                    <div key={group.trade}>
-                      <div className="mt-3 mb-2 flex items-center justify-between border-b-2 border-white/10 pb-1.5">
-                        <span className="font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-text-muted">
-                          {group.trade}
-                        </span>
-                        <span className="font-mono text-[8px] text-text-muted">
-                          {groupChecked}/{group.items.length}
-                        </span>
-                      </div>
-                      {group.items.map(item => {
-                        const isChecked = checkedItems.has(item.id)
-                        const isLocked = showGate && !emailSubmitted
-                        return (
-                          <motion.div
-                            key={item.id}
-                            onClick={() => handlePhoneItemClick(item.id)}
-                            className={`flex items-center gap-2 border-b border-white/5 py-2 select-none transition-colors ${
-                              isLocked ? "cursor-not-allowed opacity-40" : "cursor-pointer hover:bg-white/5"
-                            }`}
-                            whileTap={!isLocked ? { scale: 0.96 } : {}}
-                          >
+                  {/* Punch list items */}
+                  {PHONE_GROUPS.map(group => {
+                    const groupChecked = group.items.filter(i => checkedItems.has(i.id)).length
+                    return (
+                      <div key={group.trade}>
+                        <div className="mt-3 mb-2 flex items-center justify-between border-b-2 border-white/10 pb-1.5">
+                          <span className="font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-text-muted">
+                            {group.trade}
+                          </span>
+                          <span className={`font-mono text-[8px] ${groupChecked === group.items.length ? "text-emerald-500" : "text-text-muted"}`}>
+                            {groupChecked}/{group.items.length}
+                          </span>
+                        </div>
+                        {group.items.map(item => {
+                          const isChecked = checkedItems.has(item.id)
+                          const isLocked = showExport || showGate
+                          return (
                             <motion.div
-                              className={`flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-sm border-[1.5px] transition-all duration-200 ${
-                                isChecked
-                                  ? "border-emerald-500 bg-emerald-500"
-                                  : "border-neutral-600 hover:border-copper"
+                              key={item.id}
+                              onClick={() => handlePhoneItemClick(item.id)}
+                              className={`flex items-center gap-2 border-b border-white/5 py-2 select-none transition-colors ${
+                                isLocked ? "pointer-events-none opacity-30" : "cursor-pointer hover:bg-white/5 active:bg-white/10"
                               }`}
-                              animate={isChecked ? { scale: [1, 1.4, 1] } : { scale: 1 }}
-                              transition={{ duration: 0.3 }}
+                              whileTap={!isLocked ? { scale: 0.96 } : {}}
                             >
-                              {isChecked && (
-                                <svg width="8" height="8" viewBox="0 0 12 12">
-                                  <motion.path
-                                    d="M2 6l3 3 5-5"
-                                    fill="none"
-                                    stroke="white"
-                                    strokeWidth="2.5"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    initial={{ pathLength: 0 }}
-                                    animate={{ pathLength: 1 }}
-                                    transition={{ duration: 0.25 }}
-                                  />
-                                </svg>
+                              <motion.div
+                                className={`flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-sm border-[1.5px] transition-all duration-200 ${
+                                  isChecked
+                                    ? "border-emerald-500 bg-emerald-500"
+                                    : "border-neutral-600"
+                                }`}
+                                animate={isChecked ? { scale: [1, 1.5, 1] } : { scale: 1 }}
+                                transition={{ duration: 0.3 }}
+                              >
+                                {isChecked && (
+                                  <svg width="8" height="8" viewBox="0 0 12 12">
+                                    <motion.path
+                                      d="M2 6l3 3 5-5"
+                                      fill="none"
+                                      stroke="white"
+                                      strokeWidth="2.5"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      initial={{ pathLength: 0 }}
+                                      animate={{ pathLength: 1 }}
+                                      transition={{ duration: 0.25 }}
+                                    />
+                                  </svg>
+                                )}
+                              </motion.div>
+                              <span className={`flex-1 text-[11px] font-medium transition-all duration-200 ${
+                                isChecked ? "text-neutral-500 line-through" : "text-neutral-300"
+                              }`}>{item.text}</span>
+                              {"hot" in item && item.hot && !isChecked && (
+                                <span className="rounded-sm bg-red-500/20 px-1 font-mono text-[7px] font-bold text-red-400">HOT</span>
+                              )}
+                              {"aging" in item && item.aging && !isChecked && (
+                                <span className="font-mono text-[8px] text-amber-500">&#x23F3;</span>
                               )}
                             </motion.div>
-                            <span className={`flex-1 text-[11px] font-medium transition-all duration-200 ${
-                              isChecked ? "text-neutral-500 line-through" : "text-neutral-300"
-                            }`}>{item.text}</span>
-                            {isLocked && (
-                              <Lock size={8} className="text-neutral-600" />
-                            )}
-                            {"hot" in item && item.hot && !isChecked && (
-                              <span className="rounded-sm bg-red-500/20 px-1 font-mono text-[7px] font-bold text-red-400">HOT</span>
-                            )}
-                            {"aging" in item && item.aging && !isChecked && (
-                              <span className="font-mono text-[8px] text-amber-500">&#x23F3;</span>
-                            )}
-                          </motion.div>
-                        )
-                      })}
-                    </div>
-                  )
-                })}
+                          )
+                        })}
+                      </div>
+                    )
+                  })}
+                </div>
 
-                {/* All-clear celebration */}
+                {/* ══════════════════════════════════════ */}
+                {/* ── EXPORT OVERLAY — THE KILLER FEATURE */}
+                {/* ══════════════════════════════════════ */}
                 <AnimatePresence>
-                  {allCleared && (
+                  {showExport && !showSentConfirm && (
                     <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="mt-5 text-center"
+                      initial={{ y: "100%" }}
+                      animate={{ y: 0 }}
+                      exit={{ y: "100%" }}
+                      transition={{ type: "spring", stiffness: 280, damping: 28 }}
+                      className="absolute inset-x-0 bottom-0 z-30 rounded-t-2xl border-t-2 border-emerald-500/40 bg-dark p-5"
+                      style={{ boxShadow: "0 -20px 60px rgba(0,0,0,0.8)" }}
                     >
-                      <p className="font-display text-xs font-bold uppercase tracking-wide text-emerald-400">All items cleared!</p>
-                      <a
-                        href={APP_URL}
-                        className="mt-2 inline-block rounded-lg bg-copper px-4 py-1.5 font-display text-[10px] font-bold uppercase tracking-wide text-white transition hover:bg-copper-light"
+                      {/* Industry first badge */}
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.2 }}
+                        className="mb-3 flex justify-center"
                       >
-                        Clock In for Real &rarr;
-                      </a>
+                        <span className="inline-flex items-center gap-1 rounded-full border border-copper/40 bg-copper/10 px-2.5 py-0.5 font-mono text-[8px] font-bold uppercase tracking-widest text-copper">
+                          <Sparkles size={8} /> Industry First
+                        </span>
+                      </motion.div>
+
+                      <motion.div
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="mb-1 text-center"
+                      >
+                        <p className="font-display text-base font-bold uppercase tracking-wide text-emerald-400">
+                          List Complete
+                        </p>
+                        <p className="mt-0.5 text-[10px] text-text-secondary">
+                          Ready to send to trades — pick a channel
+                        </p>
+                      </motion.div>
+
+                      {/* Grouped trade preview */}
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.25 }}
+                        className="mb-3 space-y-1"
+                      >
+                        {PHONE_GROUPS.filter(g => g.items.some(i => checkedItems.has(i.id))).map(g => {
+                          const count = g.items.filter(i => checkedItems.has(i.id)).length
+                          return (
+                            <div key={g.trade} className="flex items-center justify-between rounded-md bg-white/5 px-2.5 py-1.5">
+                              <span className="font-mono text-[9px] font-bold uppercase text-text-muted">{g.trade}</span>
+                              <span className="text-right">
+                                <span className="font-mono text-[9px] text-neutral-400">{count} item{count > 1 ? "s" : ""}</span>
+                                <span className="ml-1.5 font-mono text-[8px] text-text-muted">→ {g.tradeSendTo}</span>
+                              </span>
+                            </div>
+                          )
+                        })}
+                      </motion.div>
+
+                      {/* Send channel buttons */}
+                      <div className="space-y-1.5">
+                        {[
+                          { id: "imessage", label: "iMessage", icon: <MessageCircle size={13} />, bg: "bg-[#0B93F6]", hoverBg: "hover:bg-[#0A84DE]", glow: "hover:shadow-[0_0_16px_rgba(11,147,246,0.5)]" },
+                          { id: "sms", label: "Text / SMS", icon: <Smartphone size={13} />, bg: "bg-emerald-600", hoverBg: "hover:bg-emerald-500", glow: "hover:shadow-[0_0_16px_rgba(34,197,94,0.5)]" },
+                          { id: "email", label: "Email", icon: <Mail size={13} />, bg: "bg-copper", hoverBg: "hover:bg-copper-light", glow: "hover:shadow-[0_0_16px_rgba(196,90,44,0.5)]" },
+                        ].map((ch, idx) => (
+                          <motion.button
+                            key={ch.id}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.35 + idx * 0.08 }}
+                            onClick={() => handleSendClick(ch.id)}
+                            className={`flex w-full items-center justify-center gap-2 rounded-lg ${ch.bg} ${ch.hoverBg} ${ch.glow} px-3 py-2 font-display text-[11px] font-bold uppercase tracking-wide text-white transition-all`}
+                          >
+                            {ch.icon}
+                            Send via {ch.label}
+                          </motion.button>
+                        ))}
+                      </div>
+
+                      <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.6 }}
+                        className="mt-2.5 text-center font-mono text-[7px] uppercase tracking-wider text-text-muted"
+                      >
+                        One tap. Formatted. Sent. No other app does this.
+                      </motion.p>
                     </motion.div>
                   )}
                 </AnimatePresence>
 
-                {/* Email gate overlay */}
+                {/* ══════════════════════════════════ */}
+                {/* ── EMAIL GATE ─────────────────── */}
+                {/* ══════════════════════════════════ */}
                 <AnimatePresence>
                   {showGate && !emailSubmitted && (
                     <motion.div
@@ -491,7 +619,8 @@ export default function App() {
                       animate={{ y: 0 }}
                       exit={{ y: "100%" }}
                       transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                      className="absolute inset-x-0 bottom-0 rounded-t-2xl border-t border-copper/30 bg-dark p-5 shadow-[0_-16px_40px_rgba(0,0,0,0.6)]"
+                      className="absolute inset-x-0 bottom-0 z-40 rounded-t-2xl border-t border-copper/30 bg-dark p-5"
+                      style={{ boxShadow: "0 -20px 60px rgba(0,0,0,0.8)" }}
                     >
                       <div className="text-center">
                         <motion.div
@@ -499,13 +628,13 @@ export default function App() {
                           animate={{ scale: [1, 1.1, 1] }}
                           transition={{ repeat: Infinity, duration: 2 }}
                         >
-                          <Zap size={18} className="text-copper" />
+                          <Send size={16} className="text-copper" />
                         </motion.div>
                         <p className="font-display text-sm font-bold uppercase tracking-wide text-white">
-                          {checkedItems.size} items in {gateSeconds}s
+                          Ready to send via {selectedChannel === "imessage" ? "iMessage" : selectedChannel === "sms" ? "SMS" : "Email"}
                         </p>
-                        <p className="mt-1 text-[11px] leading-snug text-text-secondary">
-                          Imagine clearing your real punch list this fast.
+                        <p className="mt-1 text-[10px] leading-snug text-text-secondary">
+                          Enter your email to unlock one-tap export<br />and try the full demo.
                         </p>
                         <form onSubmit={handleDemoEmailSubmit} className="mt-3">
                           <input
@@ -513,14 +642,14 @@ export default function App() {
                             value={demoEmail}
                             onChange={e => setDemoEmail(e.target.value)}
                             placeholder="your@email.com"
-                            className="w-full rounded-lg border border-white/10 bg-dark-card px-3 py-2 text-[11px] text-white placeholder-neutral-600 outline-none transition focus:border-copper"
+                            className="w-full rounded-lg border border-white/10 bg-dark-card px-3 py-2.5 text-[11px] text-white placeholder-neutral-600 outline-none transition focus:border-copper"
                             autoFocus
                           />
                           <button
                             type="submit"
-                            className="mt-2 w-full rounded-lg bg-copper px-3 py-2 font-display text-[11px] font-bold uppercase tracking-wide text-white transition hover:bg-copper-light"
+                            className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-lg bg-copper px-3 py-2.5 font-display text-[11px] font-bold uppercase tracking-wide text-white transition hover:bg-copper-light"
                           >
-                            Unlock Full Demo
+                            <Zap size={12} /> Unlock & Send
                           </button>
                         </form>
                         <p className="mt-2 font-mono text-[8px] text-text-muted">Free early access &middot; No credit card</p>
@@ -529,40 +658,91 @@ export default function App() {
                   )}
                 </AnimatePresence>
 
-                {/* Confetti burst */}
+                {/* ══════════════════════════════════ */}
+                {/* ── SENT CONFIRMATION ───────────── */}
+                {/* ══════════════════════════════════ */}
+                <AnimatePresence>
+                  {showSentConfirm && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-dark-card/95 backdrop-blur-sm"
+                    >
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: [0, 1.2, 1] }}
+                        transition={{ duration: 0.5, ease: "easeOut" }}
+                        className="mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/20"
+                      >
+                        <Check size={32} className="text-emerald-400" />
+                      </motion.div>
+                      <motion.p
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                        className="font-display text-lg font-bold uppercase tracking-wide text-emerald-400"
+                      >
+                        Sent!
+                      </motion.p>
+                      <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.5 }}
+                        className="mt-1 text-[11px] text-text-secondary"
+                      >
+                        {PHONE_GROUPS.filter(g => g.items.some(i => checkedItems.has(i.id))).length} trades notified instantly
+                      </motion.p>
+                      <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.8 }}
+                        className="mt-3 font-mono text-[8px] uppercase tracking-wider text-text-muted"
+                      >
+                        That just happened. One tap.
+                      </motion.p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* ── Confetti burst ── */}
                 <AnimatePresence>
                   {showConfetti && (
                     <motion.div
                       initial={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="pointer-events-none absolute inset-0 overflow-hidden"
+                      className="pointer-events-none absolute inset-0 z-50 overflow-hidden"
                     >
-                      {Array.from({ length: 16 }).map((_, i) => {
-                        const angle = (i / 16) * Math.PI * 2
-                        const dist = 55 + (i % 3) * 25
+                      {Array.from({ length: 24 }).map((_, i) => {
+                        const angle = (i / 24) * Math.PI * 2
+                        const dist = 50 + (i % 4) * 20
                         return (
                           <motion.div
                             key={i}
-                            className="absolute h-1.5 w-1.5 rounded-full"
+                            className="absolute rounded-full"
                             style={{
                               left: "50%",
                               top: "45%",
-                              backgroundColor: ["#C45A2C", "#22C55E", "#F59E0B", "#3B82F6", "#EC4899"][i % 5],
+                              width: i % 3 === 0 ? 6 : 4,
+                              height: i % 3 === 0 ? 6 : 4,
+                              backgroundColor: ["#C45A2C", "#22C55E", "#F59E0B", "#0B93F6", "#EC4899", "#A855F7"][i % 6],
                             }}
                             initial={{ x: 0, y: 0, scale: 0, opacity: 1 }}
                             animate={{
                               x: Math.cos(angle) * dist,
                               y: Math.sin(angle) * dist,
-                              scale: [0, 1.3, 0],
+                              scale: [0, 1.5, 0],
                               opacity: [1, 1, 0],
+                              rotate: [0, 180 + i * 30],
                             }}
-                            transition={{ duration: 0.9, ease: "easeOut" }}
+                            transition={{ duration: 1, ease: "easeOut" }}
                           />
                         )
                       })}
                     </motion.div>
                   )}
                 </AnimatePresence>
+
               </div>
             </div>
           </motion.div>
