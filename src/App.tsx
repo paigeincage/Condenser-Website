@@ -233,6 +233,7 @@ export default function App() {
   const [emailSubmitted, setEmailSubmitted] = useState(false)
   const [demoEmail, setDemoEmail] = useState("")
   const [showConfetti, setShowConfetti] = useState(false)
+  const [pageConfetti, setPageConfetti] = useState(false)
   const [showSentConfirm, setShowSentConfirm] = useState(false)
   const [showHint, setShowHint] = useState(true)
   const [selectedChannel, setSelectedChannel] = useState("")
@@ -258,15 +259,20 @@ export default function App() {
     }
   }
 
+  function fireConfetti() {
+    setShowConfetti(true)
+    setPageConfetti(true)
+    setTimeout(() => setShowConfetti(false), 2500)
+    setTimeout(() => setPageConfetti(false), 4000)
+  }
+
   function handleSendClick(channel: string) {
     setSelectedChannel(channel)
     if (emailSubmitted) {
-      // Already unlocked — simulate send
       setShowExport(false)
-      setShowSentConfirm(true)
-      setShowConfetti(true)
-      setTimeout(() => setShowConfetti(false), 2000)
-      setTimeout(() => setShowSentConfirm(false), 3000)
+      fireConfetti()
+      setTimeout(() => setShowSentConfirm(true), 300)
+      setTimeout(() => setShowSentConfirm(false), 3500)
     } else {
       setShowGate(true)
     }
@@ -278,10 +284,9 @@ export default function App() {
     setEmailSubmitted(true)
     setShowGate(false)
     setShowExport(false)
-    setShowConfetti(true)
-    setShowSentConfirm(true)
-    setTimeout(() => setShowConfetti(false), 2000)
-    setTimeout(() => setShowSentConfirm(false), 3500)
+    fireConfetti()
+    setTimeout(() => setShowSentConfirm(true), 300)
+    setTimeout(() => setShowSentConfirm(false), 4000)
   }
 
   useEffect(() => {
@@ -380,10 +385,10 @@ export default function App() {
           >
             <div className="w-[280px] rounded-[36px] border-2 border-white/20 bg-dark p-3 shadow-[0_32px_80px_rgba(0,0,0,0.5)]">
               <div className="mx-auto h-6 w-24 rounded-b-2xl bg-dark" />
-              <div className="relative min-h-[480px] overflow-hidden rounded-[24px] bg-dark-card">
+              <div className="relative min-h-[440px] overflow-hidden rounded-[24px] bg-dark-card">
 
                 {/* ── Phone header + progress ── */}
-                <div className="sticky top-0 z-20 bg-dark-card px-5 pt-5 pb-3">
+                <div className="z-20 bg-dark-card px-5 pt-5 pb-3">
                   {/* Progress bar */}
                   <div className="relative mb-3 h-2 w-full overflow-hidden rounded-full bg-white/10">
                     <motion.div
@@ -667,7 +672,7 @@ export default function App() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-dark-card/95 backdrop-blur-sm"
+                      className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-dark-card/90"
                     >
                       <motion.div
                         initial={{ scale: 0 }}
@@ -705,37 +710,38 @@ export default function App() {
                   )}
                 </AnimatePresence>
 
-                {/* ── Confetti burst ── */}
+                {/* ── Phone confetti burst ── */}
                 <AnimatePresence>
                   {showConfetti && (
                     <motion.div
                       initial={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="pointer-events-none absolute inset-0 z-50 overflow-hidden"
+                      className="pointer-events-none absolute inset-0 z-[60] overflow-hidden"
                     >
-                      {Array.from({ length: 24 }).map((_, i) => {
-                        const angle = (i / 24) * Math.PI * 2
-                        const dist = 50 + (i % 4) * 20
+                      {Array.from({ length: 30 }).map((_, i) => {
+                        const angle = (i / 30) * Math.PI * 2
+                        const dist = 40 + (i % 4) * 25
                         return (
                           <motion.div
                             key={i}
-                            className="absolute rounded-full"
+                            className="absolute"
                             style={{
                               left: "50%",
-                              top: "45%",
-                              width: i % 3 === 0 ? 6 : 4,
-                              height: i % 3 === 0 ? 6 : 4,
+                              top: "40%",
+                              width: i % 3 === 0 ? 8 : 5,
+                              height: i % 3 === 0 ? 8 : 5,
+                              borderRadius: i % 2 === 0 ? "50%" : "2px",
                               backgroundColor: ["#C45A2C", "#22C55E", "#F59E0B", "#0B93F6", "#EC4899", "#A855F7"][i % 6],
                             }}
                             initial={{ x: 0, y: 0, scale: 0, opacity: 1 }}
                             animate={{
                               x: Math.cos(angle) * dist,
                               y: Math.sin(angle) * dist,
-                              scale: [0, 1.5, 0],
+                              scale: [0, 1.8, 0.5],
                               opacity: [1, 1, 0],
-                              rotate: [0, 180 + i * 30],
+                              rotate: [0, 200 + i * 40],
                             }}
-                            transition={{ duration: 1, ease: "easeOut" }}
+                            transition={{ duration: 1.2, ease: "easeOut" }}
                           />
                         )
                       })}
@@ -1126,6 +1132,48 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      {/* ══════════════════════════════════════════ */}
+      {/* ── PAGE-LEVEL CONFETTI RAIN ────────────── */}
+      {/* ══════════════════════════════════════════ */}
+      <AnimatePresence>
+        {pageConfetti && (
+          <div className="pointer-events-none fixed inset-0 z-[9999] overflow-hidden">
+            {Array.from({ length: 80 }).map((_, i) => {
+              const xStart = (i / 80) * 100 + ((i * 7) % 13) - 6
+              const size = i % 4 === 0 ? 12 : i % 3 === 0 ? 8 : 6
+              const colors = ["#C45A2C", "#22C55E", "#F59E0B", "#0B93F6", "#EC4899", "#A855F7", "#FFFFFF"]
+              return (
+                <motion.div
+                  key={i}
+                  className="absolute"
+                  style={{
+                    left: `${xStart}%`,
+                    top: -20,
+                    width: size,
+                    height: i % 5 === 0 ? size : size * 0.6,
+                    borderRadius: i % 3 === 0 ? "50%" : "2px",
+                    backgroundColor: colors[i % colors.length],
+                  }}
+                  initial={{ y: -20, opacity: 1, rotate: 0, scale: 0 }}
+                  animate={{
+                    y: 1200,
+                    opacity: [0, 1, 1, 0.8, 0],
+                    rotate: 360 + i * 60,
+                    scale: [0, 1.2, 1, 0.8],
+                    x: [0, Math.sin(i * 0.8) * 80, Math.sin(i * 1.2) * -60, Math.sin(i * 0.5) * 40],
+                  }}
+                  transition={{
+                    duration: 2.8 + (i % 6) * 0.25,
+                    delay: (i % 12) * 0.06,
+                    ease: [0.25, 0.46, 0.45, 0.94],
+                  }}
+                />
+              )
+            })}
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
