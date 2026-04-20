@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { motion, useInView, AnimatePresence } from "framer-motion"
 import {
   ArrowRight, Menu, X, Phone, Mail, MapPin, ChevronDown, ChevronUp,
-  ClipboardList, Mic, Smartphone, Zap, Shield, BarChart3, Star, Check,
+  ClipboardList, Mic, Smartphone, Zap, Shield, BarChart3, Check,
   Send, MessageCircle, Sparkles,
   Camera, AlertTriangle, User, DollarSign, Cloud, PenLine, Calendar,
   Headphones, BookOpen, Users,
@@ -36,12 +36,12 @@ const CAPABILITIES = [
 ]
 
 const INTEGRATIONS = [
-  { icon: <Mail size={24} />, name: "Outlook & Gmail", desc: "Sync your inbox and calendar" },
-  { icon: <DollarSign size={24} />, name: "QuickBooks", desc: "Accounting & invoicing" },
-  { icon: <MessageCircle size={24} />, name: "iMessage & SMS", desc: "Native text to trades" },
-  { icon: <Cloud size={24} />, name: "Cloud Storage", desc: "Google Drive & Dropbox" },
-  { icon: <PenLine size={24} />, name: "DocuSign", desc: "Digital sign-offs & approvals" },
-  { icon: <Calendar size={24} />, name: "Calendar Sync", desc: "Apple & Google Calendar" },
+  { icon: <Mail size={24} />, name: "Outlook & Gmail", desc: "Sync your inbox and calendar", coming: true },
+  { icon: <DollarSign size={24} />, name: "QuickBooks", desc: "Accounting & invoicing", coming: true },
+  { icon: <MessageCircle size={24} />, name: "iMessage & SMS", desc: "Native text to trades", coming: true },
+  { icon: <Cloud size={24} />, name: "Cloud Storage", desc: "Google Drive & Dropbox", coming: true },
+  { icon: <PenLine size={24} />, name: "DocuSign", desc: "Digital sign-offs & approvals", coming: true },
+  { icon: <Calendar size={24} />, name: "Calendar Sync", desc: "Apple & Google Calendar", coming: true },
 ]
 
 const SUPPORT_ITEMS = [
@@ -51,22 +51,19 @@ const SUPPORT_ITEMS = [
 ]
 
 const PRICING = [
-  { name: "Starter", price: "Free", period: "", desc: "For CMs getting started", features: ["5 active projects", "Voice capture", "Trade auto-classification", "Offline mode", "Email support"], cta: "Get Started", featured: false },
-  { name: "Pro", price: "$29", period: "/mo", desc: "For serious field operators", features: ["Unlimited projects", "Priority & aging flags", "Smart templates", "PDF intake", "Safety reporting", "Homeowner updates", "Team sharing", "Priority support"], cta: "Start Free Trial", featured: true },
-  { name: "Enterprise", price: "Custom", period: "", desc: "For builders at scale", features: ["Everything in Pro", "Custom integrations", "Admin dashboard", "Dedicated onboarding", "SLA guarantee", "Phone support"], cta: "Contact Sales", featured: false },
+  { name: "Starter", priceMonthly: "Free", priceAnnual: "Free", period: "", desc: "For CMs getting started", features: ["5 active projects", "Voice capture", "Trade auto-classification", "Offline mode", "Email support"], cta: "Get Started", featured: false },
+  { name: "Pro", priceMonthly: "$39", priceAnnual: "$32", period: "/mo", desc: "For serious field operators", features: ["Unlimited projects", "Priority & aging flags", "Smart templates", "PDF intake", "Safety reporting", "Homeowner updates", "Team sharing", "Priority support"], cta: "Start Free Trial", featured: true },
+  { name: "Team", priceMonthly: "$29", priceAnnual: "$24", period: "/seat/mo", desc: "For crews and builders", features: ["Everything in Pro", "Multi-user access", "Shared project views", "Admin controls", "Team analytics", "Role-based permissions", "Bulk onboarding", "Priority support"], cta: "Start Free Trial", featured: false },
+  { name: "Enterprise", priceMonthly: "Custom", priceAnnual: "Custom", period: "", desc: "For builders at scale", features: ["Everything in Team", "Custom integrations", "Admin dashboard", "Dedicated onboarding", "SLA guarantee", "Phone support"], cta: "Contact Sales", featured: false },
 ]
 
-const TESTIMONIALS = [
-  { name: "Jake M.", role: "Field Superintendent", company: "Crestline Homes", text: "I used to spend an hour every night retyping walkthrough notes. Now I check items off as I walk. Done before I'm back at the truck." },
-  { name: "Marcus T.", role: "Senior CM", company: "Summit Builders", text: "The one-tap export changed everything. I finish a walkthrough, hit send, and every trade has their list before I leave the lot. Nothing else does this." },
-  { name: "Rachel D.", role: "Project Manager", company: "Ridgepoint Construction", text: "Offline-first was non-negotiable. Half my lots have zero signal. Everything syncs when I'm back in range — haven't lost a single item." },
-]
+/* Testimonials removed — replaced with Founding User CTA (Phase 3 credibility fix) */
 
 const STATS = [
-  { value: "96%", label: "Less Paperwork" },
   { value: "0", label: "Clipboards Needed" },
   { value: "100%", label: "Offline Capable" },
   { value: "<3min", label: "List to Send" },
+  { value: "1-Tap", label: "Export to Trades" },
 ]
 
 const FAQS = [
@@ -135,6 +132,7 @@ export default function App() {
   const [showSentConfirm, setShowSentConfirm] = useState(false)
   const [showHint, setShowHint] = useState(true)
   const [selectedChannel, setSelectedChannel] = useState("")
+  const [annual, setAnnual] = useState(false)
 
   const progressPercent = Math.min((checkedItems.size / COMPLETE_THRESHOLD) * 100, 100)
   const isComplete = checkedItems.size >= COMPLETE_THRESHOLD
@@ -185,7 +183,7 @@ export default function App() {
             <span className={`text-xl font-bold tracking-tight ${scrolled ? "text-text-on-light" : "text-white"}`}>{COMPANY}</span>
           </a>
           <div className="hidden items-center gap-8 lg:flex">
-            {[{ l: "Features", h: "#features" }, { l: "Integrations", h: "#integrations" }, { l: "Pricing", h: "#pricing" }, { l: "About", h: "#about" }, { l: "FAQ", h: "#faq" }, { l: "Contact", h: "#contact" }].map(n => (
+            {[{ l: "Features", h: "#features" }, { l: "Pricing", h: "#pricing" }, { l: "Roadmap", h: "#roadmap" }, { l: "About", h: "#about" }, { l: "FAQ", h: "#faq" }, { l: "Contact", h: "#contact" }].map(n => (
               <a key={n.h} href={n.h} className={`text-sm font-medium transition ${scrolled ? "text-neutral-500 hover:text-neutral-900" : "text-white/70 hover:text-white"}`}>{n.l}</a>
             ))}
             <a href={APP_URL} className="inline-flex items-center gap-2 rounded-lg bg-copper px-6 py-2.5 text-sm font-semibold text-white transition-all hover:bg-copper-light hover:shadow-[0_0_24px_rgba(196,90,44,0.4)]">
@@ -198,7 +196,7 @@ export default function App() {
         </div>
         {menuOpen && (
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="border-b border-light-border bg-white px-6 pb-6 lg:hidden">
-            {[{ l: "Features", h: "#features" }, { l: "Integrations", h: "#integrations" }, { l: "Pricing", h: "#pricing" }, { l: "About", h: "#about" }, { l: "FAQ", h: "#faq" }, { l: "Contact", h: "#contact" }].map(n => (
+            {[{ l: "Features", h: "#features" }, { l: "Pricing", h: "#pricing" }, { l: "Roadmap", h: "#roadmap" }, { l: "About", h: "#about" }, { l: "FAQ", h: "#faq" }, { l: "Contact", h: "#contact" }].map(n => (
               <a key={n.h} href={n.h} onClick={() => setMenuOpen(false)} className="block border-b border-light-border py-3 text-base font-medium text-neutral-700">{n.l}</a>
             ))}
             <a href={APP_URL} className="mt-4 block text-base font-semibold text-copper">Clock In →</a>
@@ -379,7 +377,8 @@ export default function App() {
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {INTEGRATIONS.map(itg => (
               <Reveal key={itg.name}>
-                <div className="flex items-center gap-5 rounded-xl border border-light-border bg-light-card p-6 shadow-sm transition hover:shadow-md hover:border-copper/30">
+                <div className="relative flex items-center gap-5 rounded-xl border border-light-border bg-light-card p-6 shadow-sm transition hover:shadow-md hover:border-copper/30">
+                  {itg.coming && <span className="absolute top-3 right-3 rounded-full bg-copper/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-copper">Coming Soon</span>}
                   <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-copper/10 text-copper">{itg.icon}</div>
                   <div>
                     <h3 className="text-base font-bold text-text-on-light">{itg.name}</h3>
@@ -415,30 +414,43 @@ export default function App() {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════ */}
-      {/* 6. PRICING (light-warm)                    */}
-      {/* ═══════════════════════════════════════════ */}
       <section id="pricing" className="bg-light-warm py-28">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <Reveal className="mb-16 text-center">
+          <Reveal className="mb-10 text-center">
             <p className="mb-3 font-display text-sm font-bold uppercase tracking-[0.2em] text-copper">Pricing</p>
             <h2 className="font-display text-4xl font-800 uppercase tracking-tight text-text-on-light lg:text-5xl">Simple plans. No surprises.</h2>
+            <p className="mx-auto mt-3 max-w-md text-sm text-text-on-light-2">7-day free trial on all paid plans · No credit card required</p>
           </Reveal>
-          <div className="grid gap-6 lg:grid-cols-3">
-            {PRICING.map(plan => (
+          {/* Annual / Monthly toggle */}
+          <div className="mb-12 flex items-center justify-center gap-4">
+            <span className={`text-sm font-semibold transition ${!annual ? "text-text-on-light" : "text-text-on-light-muted"}`}>Monthly</span>
+            <button onClick={() => setAnnual(!annual)} className={`relative h-7 w-12 rounded-full transition-colors ${annual ? "bg-copper" : "bg-neutral-300"}`} aria-label="Toggle annual pricing">
+              <motion.div className="absolute top-0.5 left-0.5 h-6 w-6 rounded-full bg-white shadow" animate={{ x: annual ? 20 : 0 }} transition={{ type: "spring", stiffness: 500, damping: 30 }} />
+            </button>
+            <span className={`text-sm font-semibold transition ${annual ? "text-text-on-light" : "text-text-on-light-muted"}`}>Annual</span>
+            {annual && <span className="rounded-full bg-copper/10 px-2.5 py-0.5 text-xs font-bold text-copper">Save up to 20%</span>}
+          </div>
+          <div className="grid gap-5 lg:grid-cols-4">
+            {PRICING.map(plan => {
+              const price = annual ? plan.priceAnnual : plan.priceMonthly
+              return (
               <Reveal key={plan.name}>
-                <div className={`relative flex h-full flex-col rounded-2xl border p-8 transition ${plan.featured ? "border-copper bg-copper/5 shadow-[0_0_40px_rgba(196,90,44,0.1)]" : "border-light-border bg-light-card shadow-sm hover:shadow-md"}`}>
+                <div className={`relative flex h-full flex-col rounded-2xl border p-7 transition ${plan.featured ? "border-copper bg-copper/5 shadow-[0_0_40px_rgba(196,90,44,0.1)]" : "border-light-border bg-light-card shadow-sm hover:shadow-md"}`}>
                   {plan.featured && <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-copper px-4 py-1 text-xs font-bold uppercase tracking-wider text-white">Most Popular</div>}
                   <h3 className="font-display text-2xl font-bold uppercase text-text-on-light">{plan.name}</h3>
                   <p className="mt-1 text-sm text-text-on-light-muted">{plan.desc}</p>
-                  <div className="mt-6 mb-6"><span className="font-display text-5xl font-900 text-text-on-light">{plan.price}</span>{plan.period && <span className="text-text-on-light-muted">{plan.period}</span>}</div>
-                  <ul className="mb-8 flex-1 space-y-3">
-                    {plan.features.map(feat => (<li key={feat} className="flex items-center gap-3 text-sm text-text-on-light-2"><Check size={16} className="shrink-0 text-copper" /> {feat}</li>))}
+                  <div className="mt-5 mb-5">
+                    <motion.span key={price} initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="font-display text-4xl font-900 text-text-on-light">{price}</motion.span>
+                    {plan.period && <span className="text-sm text-text-on-light-muted">{plan.period}</span>}
+                  </div>
+                  <ul className="mb-7 flex-1 space-y-2.5">
+                    {plan.features.map(feat => (<li key={feat} className="flex items-center gap-2.5 text-sm text-text-on-light-2"><Check size={15} className="shrink-0 text-copper" /> {feat}</li>))}
                   </ul>
-                  <a href={APP_URL} className={`inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3.5 text-sm font-semibold transition-all ${plan.featured ? "bg-copper text-white hover:bg-copper-light hover:shadow-[0_0_24px_rgba(196,90,44,0.4)]" : "border border-light-border text-text-on-light hover:border-copper hover:bg-copper/5"}`}>{plan.cta} <ArrowRight size={14} /></a>
+                  <a href={APP_URL} className={`inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold transition-all ${plan.featured ? "bg-copper text-white hover:bg-copper-light hover:shadow-[0_0_24px_rgba(196,90,44,0.4)]" : "border border-light-border text-text-on-light hover:border-copper hover:bg-copper/5"}`}>{plan.cta} <ArrowRight size={14} /></a>
                 </div>
               </Reveal>
-            ))}
+            )})
+            }
           </div>
         </div>
       </section>
@@ -448,11 +460,6 @@ export default function App() {
       {/* ═══════════════════════════════════════════ */}
       <section className="bg-copper py-20">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mb-12 flex flex-wrap items-center justify-center gap-12 opacity-50">
-            {["CRESTLINE HOMES", "SUMMIT BUILDERS", "RIDGEPOINT", "IRONWOOD HOMES", "CEDAR RIDGE"].map(name => (
-              <span key={name} className="font-display text-base font-bold uppercase tracking-widest text-white">{name}</span>
-            ))}
-          </div>
           <div className="grid grid-cols-2 gap-8 lg:grid-cols-4">
             {STATS.map(s => (
               <Reveal key={s.label}>
@@ -488,24 +495,78 @@ export default function App() {
       </section>
 
       {/* ═══════════════════════════════════════════ */}
-      {/* 9. TESTIMONIALS (light-warm)               */}
+      {/* 9. FOUNDING USER CTA (light-warm)          */}
       {/* ═══════════════════════════════════════════ */}
-      <section className="bg-light-warm py-28">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <Reveal className="mb-16 text-center">
-            <p className="mb-3 font-display text-sm font-bold uppercase tracking-[0.2em] text-copper">Testimonials</p>
-            <h2 className="font-display text-4xl font-800 uppercase tracking-tight text-text-on-light lg:text-5xl">Straight from the jobsite</h2>
+      <section id="founding" className="bg-light-warm py-28">
+        <div className="mx-auto max-w-3xl px-6 text-center lg:px-8">
+          <Reveal>
+            <div className="rounded-2xl border-2 border-copper/20 bg-light-card p-10 shadow-sm lg:p-14">
+              <motion.div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-copper/10" animate={{ scale: [1, 1.05, 1] }} transition={{ repeat: Infinity, duration: 3 }}>
+                <Sparkles size={28} className="text-copper" />
+              </motion.div>
+              <p className="mb-2 font-display text-sm font-bold uppercase tracking-[0.2em] text-copper">Limited Founding User Program</p>
+              <h2 className="font-display text-4xl font-800 uppercase tracking-tight text-text-on-light lg:text-5xl">Get in before launch</h2>
+              <p className="mx-auto mt-4 max-w-xl text-lg text-text-on-light-2 leading-relaxed">We're opening early access to a small group of CMs who want to shape the product. Founding users get priority support, direct input on the roadmap, and locked-in pricing for life.</p>
+              <div className="mt-6 space-y-3">
+                <div className="flex items-center justify-center gap-3 text-sm text-text-on-light-2"><Check size={16} className="shrink-0 text-copper" /> Lifetime locked pricing</div>
+                <div className="flex items-center justify-center gap-3 text-sm text-text-on-light-2"><Check size={16} className="shrink-0 text-copper" /> Direct roadmap input</div>
+                <div className="flex items-center justify-center gap-3 text-sm text-text-on-light-2"><Check size={16} className="shrink-0 text-copper" /> Priority support forever</div>
+                <div className="flex items-center justify-center gap-3 text-sm text-text-on-light-2"><Check size={16} className="shrink-0 text-copper" /> 7-day free trial — no credit card</div>
+              </div>
+              {/* Beehiiv-ready email capture — replace form action with Beehiiv subscribe URL when available */}
+              <div className="mt-8">
+                {emailSubmitted ? (
+                  <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center">
+                    <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100"><Check size={24} className="text-emerald-600" /></div>
+                    <p className="font-display text-lg font-bold uppercase text-text-on-light">You're on the list!</p>
+                    <p className="mt-1 text-sm text-text-on-light-2">We'll reach out soon with your early access invite.</p>
+                  </motion.div>
+                ) : (
+                  <form onSubmit={(e) => { e.preventDefault(); const fd = new FormData(e.currentTarget); if (fd.get("email")) { setEmailSubmitted(true); setDemoEmail(fd.get("email") as string); } }} className="mx-auto flex max-w-md flex-col gap-3 sm:flex-row">
+                    <input type="email" name="email" required placeholder="your@email.com" className="flex-1 rounded-lg border border-light-border bg-light px-4 py-3.5 text-sm text-text-on-light placeholder-neutral-400 outline-none transition focus:border-copper" />
+                    <button type="submit" className="inline-flex items-center justify-center gap-2 rounded-lg bg-copper px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-copper-light hover:shadow-[0_0_24px_rgba(196,90,44,0.4)]">
+                      Claim Your Spot <ArrowRight size={14} />
+                    </button>
+                  </form>
+                )}
+              </div>
+              <p className="mt-4 font-mono text-xs text-text-on-light-muted">Limited spots · No credit card required</p>
+            </div>
           </Reveal>
-          <div className="grid gap-6 md:grid-cols-3">
-            {TESTIMONIALS.map(t => (
-              <Reveal key={t.name}>
-                <div className="flex h-full flex-col rounded-2xl border border-light-border bg-light-card p-8 shadow-sm">
-                  <div className="mb-4 flex gap-1">{Array.from({ length: 5 }).map((_, i) => <Star key={i} size={16} className="fill-copper text-copper" />)}</div>
-                  <p className="mb-6 flex-1 text-sm leading-relaxed text-text-on-light-2">"{t.text}"</p>
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-copper/10 font-display text-sm font-bold text-copper">{t.name.charAt(0)}</div>
-                    <div><div className="text-sm font-semibold text-text-on-light">{t.name}</div><div className="text-xs text-text-on-light-muted">{t.role}, {t.company}</div></div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════ */}
+      {/* 10. ROADMAP (light)                        */}
+      {/* ═══════════════════════════════════════════ */}
+      <section id="roadmap" className="bg-light py-28">
+        <div className="mx-auto max-w-5xl px-6 lg:px-8">
+          <Reveal className="mb-16 text-center">
+            <p className="mb-3 font-display text-sm font-bold uppercase tracking-[0.2em] text-copper">Product Roadmap</p>
+            <h2 className="font-display text-4xl font-800 uppercase tracking-tight text-text-on-light lg:text-5xl">Where we're headed</h2>
+            <p className="mx-auto mt-4 max-w-2xl text-lg text-text-on-light-2 leading-relaxed">Transparency matters. Here's what's live, what's next, and what's on the horizon.</p>
+          </Reveal>
+          <div className="grid gap-8 lg:grid-cols-3">
+            {[
+              { phase: "Now", label: "Live", color: "bg-emerald-500", items: ["Punch list engine", "Voice capture", "Trade auto-classification", "One-tap export (iMessage, SMS, Email)", "Offline-first sync", "Priority & aging flags", "Safety reporting", "Homeowner updates"] },
+              { phase: "Next", label: "Q3 2026", color: "bg-copper", items: ["Multi-user team access", "Admin dashboard & analytics", "Outlook & Gmail integration", "QuickBooks sync", "DocuSign sign-offs", "Calendar integration", "PDF intake improvements"] },
+              { phase: "Later", label: "Q4 2026+", color: "bg-text-on-light-muted", items: ["Cloud storage (Google Drive, Dropbox)", "Custom workflow templates", "Builder-to-homeowner portal", "Advanced AI classification", "Community marketplace", "API access"] },
+            ].map(col => (
+              <Reveal key={col.phase}>
+                <div className="flex h-full flex-col rounded-2xl border border-light-border bg-light-card p-7 shadow-sm">
+                  <div className="mb-4 flex items-center gap-3">
+                    <div className={`h-3 w-3 rounded-full ${col.color}`} />
+                    <span className="font-display text-xl font-bold uppercase text-text-on-light">{col.phase}</span>
+                    <span className="rounded-full bg-copper/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-copper">{col.label}</span>
                   </div>
+                  <ul className="flex-1 space-y-2.5">
+                    {col.items.map(item => (
+                      <li key={item} className="flex items-center gap-2.5 text-sm text-text-on-light-2">
+                        <Check size={14} className={`shrink-0 ${col.phase === "Now" ? "text-emerald-500" : "text-text-on-light-muted"}`} />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </Reveal>
             ))}
@@ -514,9 +575,9 @@ export default function App() {
       </section>
 
       {/* ═══════════════════════════════════════════ */}
-      {/* 10. FAQ (light)                            */}
+      {/* 11. FAQ (light-warm)                       */}
       {/* ═══════════════════════════════════════════ */}
-      <section id="faq" className="bg-light py-28">
+      <section id="faq" className="bg-light-warm py-28">
         <div className="mx-auto max-w-3xl px-6 lg:px-8">
           <Reveal className="mb-12 text-center">
             <p className="mb-3 font-display text-sm font-bold uppercase tracking-[0.2em] text-copper">Support</p>
@@ -534,7 +595,7 @@ export default function App() {
         <div className="relative z-10 mx-auto max-w-7xl px-6 text-center lg:px-8">
           <Reveal>
             <h2 className="font-display text-4xl font-900 uppercase tracking-tight text-white lg:text-6xl">Ready to ditch the clipboard?</h2>
-            <p className="mx-auto mt-4 max-w-xl text-lg text-white/70 leading-relaxed">CMs across the country are already closing out faster. Your turn.</p>
+            <p className="mx-auto mt-4 max-w-xl text-lg text-white/70 leading-relaxed">Join the CMs building a better way to close out. Your crew deserves better tools.</p>
             <div className="mt-10"><a href={APP_URL} className="inline-flex items-center gap-2 rounded-lg bg-dark px-8 py-4 text-base font-semibold text-white transition hover:bg-neutral-900 hover:shadow-xl">Clock In <ArrowRight size={16} /></a></div>
           </Reveal>
         </div>
@@ -550,7 +611,7 @@ export default function App() {
             <h2 className="mb-6 font-display text-5xl font-800 uppercase leading-[0.95] tracking-tight text-text-on-light lg:text-6xl">Let's talk.</h2>
             <p className="mb-10 text-lg text-text-on-light-2 leading-relaxed">Questions? Want a demo? Drop us a line and we'll get back to you within 24 hours.</p>
             <div className="space-y-6">
-              {[{ icon: <Phone size={20} />, label: "Phone", value: "(512) 555-0199" }, { icon: <Mail size={20} />, label: "Email", value: "hello@buildcore.dev" }, { icon: <MapPin size={20} />, label: "Location", value: "Austin, TX" }].map(c => (
+              {[{ icon: <Phone size={20} />, label: "Phone", value: "(361) 389-6902" }, { icon: <Mail size={20} />, label: "Email", value: "hello@buildcore.dev" }, { icon: <MapPin size={20} />, label: "Location", value: "Austin, TX" }].map(c => (
                 <div key={c.label} className="flex items-center gap-4">
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-copper/10 text-copper">{c.icon}</div>
                   <div><div className="text-xs font-medium uppercase tracking-wider text-text-on-light-muted">{c.label}</div><div className="text-sm font-semibold text-text-on-light">{c.value}</div></div>
@@ -588,7 +649,7 @@ export default function App() {
             <div>
               <h4 className="mb-4 font-display text-xs font-bold uppercase tracking-wider text-text-muted">Platform</h4>
               <ul className="space-y-2.5">
-                {[{ l: "Features", h: "#features" }, { l: "Integrations", h: "#integrations" }, { l: "Pricing", h: "#pricing" }, { l: "About", h: "#about" }, { l: "FAQ", h: "#faq" }, { l: "Contact", h: "#contact" }].map(n => (
+                {[{ l: "Features", h: "#features" }, { l: "Pricing", h: "#pricing" }, { l: "Roadmap", h: "#roadmap" }, { l: "About", h: "#about" }, { l: "FAQ", h: "#faq" }, { l: "Contact", h: "#contact" }].map(n => (
                   <li key={n.l}><a href={n.h} className="text-sm text-text-secondary transition hover:text-white">{n.l}</a></li>
                 ))}
               </ul>
