@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { motion, useInView, AnimatePresence } from "framer-motion"
 import {
   ArrowRight, Menu, X, Phone, Mail, MapPin, ChevronDown, ChevronUp,
-  ClipboardList, Mic, Smartphone, Zap, Shield, BarChart3, Star, Check,
+  ClipboardList, Mic, Smartphone, Zap, Shield, BarChart3, Check,
   Send, MessageCircle, Sparkles,
   Camera, AlertTriangle, User, DollarSign, Cloud, PenLine, Calendar,
   Headphones, BookOpen, Users,
@@ -11,6 +11,10 @@ import {
 const COMPANY = "BuildCore"
 const PRODUCT = "The Condenser"
 const APP_URL = "https://the-condenser-production.up.railway.app/home"
+
+// Hero video integration path — set to a public asset (e.g. "/hero.mp4") when available.
+// When null, hero falls back to the interactive phone layout below.
+const HERO_VIDEO_SRC: string | null = null
 
 /* ── Reveal ── */
 function Reveal({ children, className = "" }: { children: React.ReactNode; className?: string }) {
@@ -54,19 +58,6 @@ const PRICING = [
   { name: "Starter", price: "Free", period: "", desc: "For CMs getting started", features: ["5 active projects", "Voice capture", "Trade auto-classification", "Offline mode", "Email support"], cta: "Get Started", featured: false },
   { name: "Pro", price: "$29", period: "/mo", desc: "For serious field operators", features: ["Unlimited projects", "Priority & aging flags", "Smart templates", "PDF intake", "Safety reporting", "Homeowner updates", "Team sharing", "Priority support"], cta: "Start Free Trial", featured: true },
   { name: "Enterprise", price: "Custom", period: "", desc: "For builders at scale", features: ["Everything in Pro", "Custom integrations", "Admin dashboard", "Dedicated onboarding", "SLA guarantee", "Phone support"], cta: "Contact Sales", featured: false },
-]
-
-const TESTIMONIALS = [
-  { name: "Jake M.", role: "Field Superintendent", company: "Crestline Homes", text: "I used to spend an hour every night retyping walkthrough notes. Now I check items off as I walk. Done before I'm back at the truck." },
-  { name: "Marcus T.", role: "Senior CM", company: "Summit Builders", text: "The one-tap export changed everything. I finish a walkthrough, hit send, and every trade has their list before I leave the lot. Nothing else does this." },
-  { name: "Rachel D.", role: "Project Manager", company: "Ridgepoint Construction", text: "Offline-first was non-negotiable. Half my lots have zero signal. Everything syncs when I'm back in range — haven't lost a single item." },
-]
-
-const STATS = [
-  { value: "96%", label: "Less Paperwork" },
-  { value: "0", label: "Clipboards Needed" },
-  { value: "100%", label: "Offline Capable" },
-  { value: "<3min", label: "List to Send" },
 ]
 
 const FAQS = [
@@ -210,6 +201,9 @@ export default function App() {
       {/* 1. HERO (dark copper)                      */}
       {/* ═══════════════════════════════════════════ */}
       <section className="relative min-h-screen overflow-hidden bg-copper">
+        {HERO_VIDEO_SRC && (
+          <video autoPlay loop muted playsInline className="absolute inset-0 h-full w-full object-cover" src={HERO_VIDEO_SRC} />
+        )}
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(0,0,0,0.3)_0%,transparent_60%)]" />
         <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col justify-center px-6 pt-20 lg:flex-row lg:items-center lg:gap-16 lg:px-8">
@@ -271,7 +265,7 @@ export default function App() {
                 {/* Export overlay */}
                 <AnimatePresence>{showExport && !showSentConfirm && (
                   <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: "spring", stiffness: 280, damping: 28 }} className="absolute inset-x-0 bottom-0 z-30 rounded-t-2xl border-t-2 border-emerald-500/40 bg-dark p-5" style={{ boxShadow: "0 -20px 60px rgba(0,0,0,0.8)" }}>
-                    <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }} className="mb-3 flex justify-center"><span className="inline-flex items-center gap-1 rounded-full border border-copper/40 bg-copper/10 px-2.5 py-0.5 font-mono text-[8px] font-bold uppercase tracking-widest text-copper"><Sparkles size={8} /> Industry First</span></motion.div>
+                    <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }} className="mb-3 flex justify-center"><span className="inline-flex items-center gap-1 rounded-full border border-copper/40 bg-copper/10 px-2.5 py-0.5 font-mono text-[8px] font-bold uppercase tracking-widest text-copper"><Sparkles size={8} /> What Sets Us Apart</span></motion.div>
                     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-1 text-center"><p className="font-display text-base font-bold uppercase tracking-wide text-emerald-400">List Complete</p><p className="mt-0.5 text-[10px] text-text-secondary">Ready to send — pick a channel</p></motion.div>
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.25 }} className="mb-3 space-y-1">
                       {PHONE_GROUPS.filter(g => g.items.some(i => checkedItems.has(i.id))).map(g => { const c = g.items.filter(i => checkedItems.has(i.id)).length; return (<div key={g.trade} className="flex items-center justify-between rounded-md bg-white/5 px-2.5 py-1.5"><span className="font-mono text-[9px] font-bold uppercase text-text-muted">{g.trade}</span><span className="font-mono text-[8px] text-text-muted">{c} → {g.tradeSendTo}</span></div>) })}
@@ -444,25 +438,13 @@ export default function App() {
       </section>
 
       {/* ═══════════════════════════════════════════ */}
-      {/* 7. TRUSTED BY + STATS (copper)             */}
+      {/* 7. TAGLINE BAND (copper)                   */}
       {/* ═══════════════════════════════════════════ */}
       <section className="bg-copper py-20">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mb-12 flex flex-wrap items-center justify-center gap-12 opacity-50">
-            {["CRESTLINE HOMES", "SUMMIT BUILDERS", "RIDGEPOINT", "IRONWOOD HOMES", "CEDAR RIDGE"].map(name => (
-              <span key={name} className="font-display text-base font-bold uppercase tracking-widest text-white">{name}</span>
-            ))}
-          </div>
-          <div className="grid grid-cols-2 gap-8 lg:grid-cols-4">
-            {STATS.map(s => (
-              <Reveal key={s.label}>
-                <div className="text-center">
-                  <div className="font-display text-5xl font-900 text-dark lg:text-6xl">{s.value}</div>
-                  <div className="mt-2 text-sm font-semibold uppercase tracking-wider text-white/70">{s.label}</div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
+        <div className="mx-auto max-w-4xl px-6 text-center lg:px-8">
+          <Reveal>
+            <h2 className="font-display text-4xl font-900 uppercase leading-[0.95] tracking-tight text-white lg:text-6xl">Built for the field,<br />not the office.</h2>
+          </Reveal>
         </div>
       </section>
 
@@ -488,28 +470,22 @@ export default function App() {
       </section>
 
       {/* ═══════════════════════════════════════════ */}
-      {/* 9. TESTIMONIALS (light-warm)               */}
+      {/* 9. FOUNDING USER CTA (light-warm)          */}
       {/* ═══════════════════════════════════════════ */}
       <section className="bg-light-warm py-28">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <Reveal className="mb-16 text-center">
-            <p className="mb-3 font-display text-sm font-bold uppercase tracking-[0.2em] text-copper">Testimonials</p>
-            <h2 className="font-display text-4xl font-800 uppercase tracking-tight text-text-on-light lg:text-5xl">Straight from the jobsite</h2>
+        <div className="mx-auto max-w-3xl px-6 lg:px-8">
+          <Reveal className="mb-10 text-center">
+            <p className="mb-3 font-display text-sm font-bold uppercase tracking-[0.2em] text-copper">Founding Users</p>
+            <h2 className="mb-5 font-display text-4xl font-800 uppercase leading-[0.95] tracking-tight text-text-on-light lg:text-5xl">Shape the tool<br />from day one</h2>
+            <p className="mx-auto max-w-xl text-lg leading-relaxed text-text-on-light-2">We're onboarding a small group of construction managers to steer what comes next. Get in early, influence the roadmap, lock in founding pricing.</p>
           </Reveal>
-          <div className="grid gap-6 md:grid-cols-3">
-            {TESTIMONIALS.map(t => (
-              <Reveal key={t.name}>
-                <div className="flex h-full flex-col rounded-2xl border border-light-border bg-light-card p-8 shadow-sm">
-                  <div className="mb-4 flex gap-1">{Array.from({ length: 5 }).map((_, i) => <Star key={i} size={16} className="fill-copper text-copper" />)}</div>
-                  <p className="mb-6 flex-1 text-sm leading-relaxed text-text-on-light-2">"{t.text}"</p>
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-copper/10 font-display text-sm font-bold text-copper">{t.name.charAt(0)}</div>
-                    <div><div className="text-sm font-semibold text-text-on-light">{t.name}</div><div className="text-xs text-text-on-light-muted">{t.role}, {t.company}</div></div>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
+          <Reveal>
+            <form onSubmit={e => e.preventDefault()} className="mx-auto flex max-w-xl flex-col gap-3 sm:flex-row">
+              <input type="email" required placeholder="you@yourcompany.com" className="flex-1 rounded-lg border border-light-border bg-light-card px-4 py-3.5 text-sm text-text-on-light placeholder-neutral-400 outline-none transition focus:border-copper" />
+              <button type="submit" className="inline-flex items-center justify-center gap-2 rounded-lg bg-copper px-6 py-3.5 text-sm font-semibold text-white transition-all hover:bg-copper-light">Claim a Spot <ArrowRight size={14} /></button>
+            </form>
+            <p className="mt-4 text-center font-mono text-xs uppercase tracking-wider text-text-on-light-muted">Limited to the first 50 field operators &middot; No credit card</p>
+          </Reveal>
         </div>
       </section>
 
@@ -550,7 +526,7 @@ export default function App() {
             <h2 className="mb-6 font-display text-5xl font-800 uppercase leading-[0.95] tracking-tight text-text-on-light lg:text-6xl">Let's talk.</h2>
             <p className="mb-10 text-lg text-text-on-light-2 leading-relaxed">Questions? Want a demo? Drop us a line and we'll get back to you within 24 hours.</p>
             <div className="space-y-6">
-              {[{ icon: <Phone size={20} />, label: "Phone", value: "(512) 555-0199" }, { icon: <Mail size={20} />, label: "Email", value: "hello@buildcore.dev" }, { icon: <MapPin size={20} />, label: "Location", value: "Austin, TX" }].map(c => (
+              {[{ icon: <Phone size={20} />, label: "Phone", value: "(361) 389-6902" }, { icon: <Mail size={20} />, label: "Email", value: "hello@buildcore.dev" }, { icon: <MapPin size={20} />, label: "Location", value: "Austin, TX" }].map(c => (
                 <div key={c.label} className="flex items-center gap-4">
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-copper/10 text-copper">{c.icon}</div>
                   <div><div className="text-xs font-medium uppercase tracking-wider text-text-on-light-muted">{c.label}</div><div className="text-sm font-semibold text-text-on-light">{c.value}</div></div>
