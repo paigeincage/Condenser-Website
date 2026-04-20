@@ -54,10 +54,58 @@ const SUPPORT_ITEMS = [
   { icon: <Users size={32} />, title: "CM Community", desc: "Connect with construction managers across the country. Share templates, trade contacts, and hard-won lessons." },
 ]
 
-const PRICING = [
-  { name: "Starter", price: "Free", period: "", desc: "For CMs getting started", features: ["5 active projects", "Voice capture", "Trade auto-classification", "Offline mode", "Email support"], cta: "Get Started", featured: false },
-  { name: "Pro", price: "$29", period: "/mo", desc: "For serious field operators", features: ["Unlimited projects", "Priority & aging flags", "Smart templates", "PDF intake", "Safety reporting", "Homeowner updates", "Team sharing", "Priority support"], cta: "Start Free Trial", featured: true },
-  { name: "Enterprise", price: "Custom", period: "", desc: "For builders at scale", features: ["Everything in Pro", "Custom integrations", "Admin dashboard", "Dedicated onboarding", "SLA guarantee", "Phone support"], cta: "Contact Sales", featured: false },
+type Tier = {
+  name: string
+  monthly: number | null
+  annual: number | null
+  unit: string
+  priceLabel?: string
+  desc: string
+  features: string[]
+  cta: string
+  featured: boolean
+  trial: boolean
+}
+
+const PRICING: Tier[] = [
+  {
+    name: "Starter",
+    monthly: 0, annual: 0, unit: "",
+    priceLabel: "Free",
+    desc: "For CMs getting started",
+    features: ["5 active projects", "Voice capture", "Trade auto-classification", "Offline mode", "Email support"],
+    cta: "Get Started",
+    featured: false,
+    trial: false,
+  },
+  {
+    name: "Pro",
+    monthly: 39, annual: 32, unit: "/mo",
+    desc: "For serious field operators",
+    features: ["Unlimited projects", "Priority & aging flags", "Smart templates", "PDF intake", "Safety reporting", "Homeowner updates", "Offline mode", "Priority support"],
+    cta: "Start Free Trial",
+    featured: true,
+    trial: true,
+  },
+  {
+    name: "Team",
+    monthly: 29, annual: 24, unit: "/user/mo",
+    desc: "For crews and offices",
+    features: ["Everything in Pro", "Multi-user access", "Roles & permissions", "Shared templates & contacts", "Team activity feed", "Admin dashboard", "Bulk import", "Priority support"],
+    cta: "Start Free Trial",
+    featured: false,
+    trial: true,
+  },
+  {
+    name: "Enterprise",
+    monthly: null, annual: null, unit: "",
+    priceLabel: "Custom",
+    desc: "For builders at scale",
+    features: ["Everything in Team", "Custom integrations", "SSO & SAML", "Dedicated onboarding", "SLA guarantee", "Phone support"],
+    cta: "Contact Sales",
+    featured: false,
+    trial: false,
+  },
 ]
 
 const FAQS = [
@@ -126,6 +174,7 @@ export default function App() {
   const [showSentConfirm, setShowSentConfirm] = useState(false)
   const [showHint, setShowHint] = useState(true)
   const [selectedChannel, setSelectedChannel] = useState("")
+  const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly")
 
   const progressPercent = Math.min((checkedItems.size / COMPLETE_THRESHOLD) * 100, 100)
   const isComplete = checkedItems.size >= COMPLETE_THRESHOLD
@@ -414,26 +463,68 @@ export default function App() {
       {/* ═══════════════════════════════════════════ */}
       <section id="pricing" className="bg-light-warm py-28">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <Reveal className="mb-16 text-center">
+          <Reveal className="mb-10 text-center">
             <p className="mb-3 font-display text-sm font-bold uppercase tracking-[0.2em] text-copper">Pricing</p>
             <h2 className="font-display text-4xl font-800 uppercase tracking-tight text-text-on-light lg:text-5xl">Simple plans. No surprises.</h2>
           </Reveal>
-          <div className="grid gap-6 lg:grid-cols-3">
-            {PRICING.map(plan => (
-              <Reveal key={plan.name}>
-                <div className={`relative flex h-full flex-col rounded-2xl border p-8 transition ${plan.featured ? "border-copper bg-copper/5 shadow-[0_0_40px_rgba(196,90,44,0.1)]" : "border-light-border bg-light-card shadow-sm hover:shadow-md"}`}>
-                  {plan.featured && <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-copper px-4 py-1 text-xs font-bold uppercase tracking-wider text-white">Most Popular</div>}
-                  <h3 className="font-display text-2xl font-bold uppercase text-text-on-light">{plan.name}</h3>
-                  <p className="mt-1 text-sm text-text-on-light-muted">{plan.desc}</p>
-                  <div className="mt-6 mb-6"><span className="font-display text-5xl font-900 text-text-on-light">{plan.price}</span>{plan.period && <span className="text-text-on-light-muted">{plan.period}</span>}</div>
-                  <ul className="mb-8 flex-1 space-y-3">
-                    {plan.features.map(feat => (<li key={feat} className="flex items-center gap-3 text-sm text-text-on-light-2"><Check size={16} className="shrink-0 text-copper" /> {feat}</li>))}
-                  </ul>
-                  <a href={APP_URL} className={`inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3.5 text-sm font-semibold transition-all ${plan.featured ? "bg-copper text-white hover:bg-copper-light hover:shadow-[0_0_24px_rgba(196,90,44,0.4)]" : "border border-light-border text-text-on-light hover:border-copper hover:bg-copper/5"}`}>{plan.cta} <ArrowRight size={14} /></a>
-                </div>
-              </Reveal>
-            ))}
+
+          {/* Billing toggle */}
+          <Reveal className="mb-12 flex justify-center">
+            <div className="inline-flex items-center rounded-full border border-light-border bg-light-card p-1 shadow-sm">
+              <button
+                onClick={() => setBillingCycle("monthly")}
+                className={`rounded-full px-5 py-2 text-sm font-semibold transition-all ${billingCycle === "monthly" ? "bg-copper text-white shadow-sm" : "text-text-on-light-2 hover:text-text-on-light"}`}
+              >Monthly</button>
+              <button
+                onClick={() => setBillingCycle("annual")}
+                className={`inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-semibold transition-all ${billingCycle === "annual" ? "bg-copper text-white shadow-sm" : "text-text-on-light-2 hover:text-text-on-light"}`}
+              >Annual <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${billingCycle === "annual" ? "bg-white/20 text-white" : "bg-copper/10 text-copper"}`}>Save ~18%</span></button>
+            </div>
+          </Reveal>
+
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {PRICING.map(plan => {
+              const price = billingCycle === "annual" ? plan.annual : plan.monthly
+              const showNumeric = plan.priceLabel === undefined && price !== null
+              return (
+                <Reveal key={plan.name}>
+                  <div className={`relative flex h-full flex-col rounded-2xl border p-8 transition ${plan.featured ? "border-copper bg-copper/5 shadow-[0_0_40px_rgba(196,90,44,0.1)]" : "border-light-border bg-light-card shadow-sm hover:shadow-md"}`}>
+                    {plan.featured && <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-copper px-4 py-1 text-xs font-bold uppercase tracking-wider text-white">Most Popular</div>}
+                    <h3 className="font-display text-2xl font-bold uppercase text-text-on-light">{plan.name}</h3>
+                    <p className="mt-1 min-h-[2.5rem] text-sm text-text-on-light-muted">{plan.desc}</p>
+                    <div className="mt-6 mb-2">
+                      {showNumeric ? (
+                        <>
+                          <span className="font-display text-5xl font-900 text-text-on-light">${price}</span>
+                          <span className="text-text-on-light-muted">{plan.unit}</span>
+                        </>
+                      ) : (
+                        <span className="font-display text-5xl font-900 text-text-on-light">{plan.priceLabel}</span>
+                      )}
+                    </div>
+                    <p className="mb-6 min-h-[1.25rem] text-xs font-mono uppercase tracking-wider text-text-on-light-muted">
+                      {plan.trial ? (billingCycle === "annual" ? "billed annually · 7-day free trial" : "billed monthly · 7-day free trial") : ""}
+                    </p>
+                    <ul className="mb-8 flex-1 space-y-3">
+                      {plan.features.map(feat => (<li key={feat} className="flex items-center gap-3 text-sm text-text-on-light-2"><Check size={16} className="shrink-0 text-copper" /> {feat}</li>))}
+                    </ul>
+                    <a href={APP_URL} className={`inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3.5 text-sm font-semibold transition-all ${plan.featured ? "bg-copper text-white hover:bg-copper-light hover:shadow-[0_0_24px_rgba(196,90,44,0.4)]" : "border border-light-border text-text-on-light hover:border-copper hover:bg-copper/5"}`}>{plan.cta} <ArrowRight size={14} /></a>
+                    {plan.trial && <p className="mt-2 text-center text-xs text-text-on-light-muted">No credit card required</p>}
+                  </div>
+                </Reveal>
+              )
+            })}
           </div>
+
+          {/* Trust row */}
+          <Reveal>
+            <div className="mt-14 flex flex-wrap items-center justify-center gap-x-10 gap-y-3 text-sm text-text-on-light-2">
+              <span className="inline-flex items-center gap-2"><Check size={16} className="text-copper" /> 7-day free trial</span>
+              <span className="inline-flex items-center gap-2"><Check size={16} className="text-copper" /> No credit card</span>
+              <span className="inline-flex items-center gap-2"><Check size={16} className="text-copper" /> Cancel anytime</span>
+              <span className="inline-flex items-center gap-2"><Shield size={16} className="text-copper" /> Your data stays yours</span>
+            </div>
+          </Reveal>
         </div>
       </section>
 
