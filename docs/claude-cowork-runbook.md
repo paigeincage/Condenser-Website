@@ -37,10 +37,10 @@ These are the only things only Paige can do. Do not proceed past each gate until
 | **G1** | Adds `JWT_SECRET=<value>` line to `the-condenser-experimental/server/.env` | Run `grep ^JWT_SECRET= C:/Users/Admin/the-condenser-experimental/server/.env` and expect a non-empty match. Do NOT print the value. |
 | **G2** | Approves `prisma db push` target (Railway prod DB) | Paige says "yes push" or equivalent in chat. Default target is whatever `DATABASE_URL` currently resolves to in `server/.env`. |
 | **G3** | Supplies Beehiiv Publication ID (`pub_…`) + API Key | Paige pastes both to chat. Immediately place them into Railway env (see Task 11), never into repo files. |
-| **G4** | Supplies Plausible domain (a string like `buildcorecm.com`) | Paige confirms the domain she registered on plausible.io. |
+| **G4** | Supplies Plausible domain (a string like `buildcoreoperations.com`) | Paige confirms the domain she registered on plausible.io. |
 | **G5** | Drops hero video into `the-condenser-landing/public/` and names the file | Verify via `ls C:/Users/Admin/the-condenser-landing/public/ \| grep -iE '\.(mp4\|webm)$'`. |
 | **G6** | Drops 4 screenshots into `the-condenser-landing/public/screenshots/` with these exact filenames: `walkthrough.png`, `send-modal.png`, `contacts.png`, `dashboard.png` | `ls C:/Users/Admin/the-condenser-landing/public/screenshots/` should show all four. |
-| **G7** | Points `buildcorecm.com` DNS at Railway landing service | Paige reports DNS propagation. |
+| **G7** | Points `buildcoreoperations.com` DNS at Railway landing service | Paige reports DNS propagation. |
 | **G8** | Sets Railway build-time env vars in the Railway dashboard (or confirms you should do it via `railway` CLI) | Paige confirms which path. |
 | **G9** | Explicit "ship it" for the launch-prep → master merge + push | Do not merge without this. |
 
@@ -267,7 +267,7 @@ git push origin master  # this pushes local master to remote main per repo confi
   ```bash
   curl -s -o /dev/null -w "%{http_code}\n" https://the-condenser-landing-production.up.railway.app
   curl -s -o /dev/null -w "%{http_code}\n" https://condenser-app-production.up.railway.app/api/health
-  curl -s -o /dev/null -w "%{http_code}\n" https://buildcorecm.com  # only after G7
+  curl -s -o /dev/null -w "%{http_code}\n" https://buildcoreoperations.com  # only after G7
   ```
 - Expect `200` on all.
 - Cache-bust check (PWA): the app is a PWA. After deploy, tell Paige to hard-refresh (Ctrl+Shift+R) if she was already signed in. This is a known issue flagged in memory `feedback_pwa_cache.md`.
@@ -280,7 +280,7 @@ git push origin master  # this pushes local master to remote main per repo confi
 **Phase:** Launch day
 **Pre:** Task 9 passed.
 **Do:** This is Paige's job. Tell her the 3 checks:
-1. `buildcorecm.com` loads, Founding User form accepts test email, Beehiiv receives it (she checks Beehiiv dashboard).
+1. `buildcoreoperations.com` loads, Founding User form accepts test email, Beehiiv receives it (she checks Beehiiv dashboard).
 2. App URL loads, signup with a fresh email, Home greeting shows her name.
 3. Landing pricing toggle switches between monthly/annual — Pro shows $39 then $32.
 
@@ -292,7 +292,7 @@ git push origin master  # this pushes local master to remote main per repo confi
 
 **Phase:** Launch day, after Task 10
 **Pre:** Paige has Plausible dashboard open.
-**Do:** Open `https://buildcorecm.com` in an incognito browser window. Open devtools → Network tab → filter for `plausible`. Click the hero "Clock In" CTA.
+**Do:** Open `https://buildcoreoperations.com` in an incognito browser window. Open devtools → Network tab → filter for `plausible`. Click the hero "Clock In" CTA.
 **Verify:**
 - Network shows a POST to `plausible.io/api/event` with event name `cta_click`.
 - Plausible dashboard shows the event within ~60 seconds.
@@ -367,7 +367,7 @@ If Paige asks to post multiple Reddit posts at once, gently flag §3 of `launch-
 ### E4. Landing shows stale content after deploy
 - Cause: PWA cache. Known. See `memory/feedback_pwa_cache.md`.
 - Fix: Tell Paige to hard-refresh (Ctrl+Shift+R). Do NOT redeploy — that does not help.
-- Verify bundle hash changed: `curl -s https://buildcorecm.com | grep -oE 'index-[A-Za-z0-9_-]+\.js'` — compare to `dist/assets/` filename from the last build.
+- Verify bundle hash changed: `curl -s https://buildcoreoperations.com | grep -oE 'index-[A-Za-z0-9_-]+\.js'` — compare to `dist/assets/` filename from the last build.
 
 ### E5. Paige asks you to "just push"
 - Response: "I'll push after `npm run build` + `npx tsc -b` pass locally. One sec." Then do it.
@@ -393,8 +393,8 @@ Add to `index.html`:
 ```html
 <meta property="og:title" content="BuildCore — Built for the field, not the office" />
 <meta property="og:description" content="Punch lists for residential CMs. Voice in, trade-grouped dispatch out. Offline-first." />
-<meta property="og:image" content="https://buildcorecm.com/og.png" />
-<meta property="og:url" content="https://buildcorecm.com" />
+<meta property="og:image" content="https://buildcoreoperations.com/og.png" />
+<meta property="og:url" content="https://buildcoreoperations.com" />
 <meta property="og:type" content="website" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@paige_cm" />
@@ -406,7 +406,7 @@ Create `public/robots.txt`:
 ```
 User-agent: *
 Allow: /
-Sitemap: https://buildcorecm.com/sitemap.xml
+Sitemap: https://buildcoreoperations.com/sitemap.xml
 ```
 Create `public/sitemap.xml` with the single landing URL + last-modified date.
 
@@ -426,7 +426,7 @@ Run axe DevTools on live landing + app signup flow. Fix any color-contrast or mi
 Inside Beehiiv dashboard: set up an automation that adds every Founding User subscriber to an "early-access" tag. Triggered by the form submission. Paige configures this in the Beehiiv UI; you only advise.
 
 ### B9. Google Search Console
-Verify the `buildcorecm.com` property in GSC. Submit sitemap. This is 100% Paige-owned (Google account access). You only remind her.
+Verify the `buildcoreoperations.com` property in GSC. Submit sitemap. This is 100% Paige-owned (Google account access). You only remind her.
 
 ### B10. Package audit
 `npm audit` on both repos. Report any HIGH/CRITICAL vulns. Do NOT auto-run `npm audit fix` — it can breaking-upgrade transitive deps. Show Paige the list, get consent per-fix.
@@ -451,7 +451,7 @@ Verify the `buildcorecm.com` property in GSC. Submit sitemap. This is 100% Paige
 ## 8. Success criteria for "launch complete"
 
 Mark the launch done only when ALL of these are true:
-1. `buildcorecm.com` returns 200, shows current design, Founding CTA accepts emails and they land in Beehiiv.
+1. `buildcoreoperations.com` returns 200, shows current design, Founding CTA accepts emails and they land in Beehiiv.
 2. App URL returns 200, fresh signup works end-to-end, greeting reflects the new user's name, data isolation holds (second signup can't see first's projects).
 3. Plausible dashboard shows live events from both landing and app.
 4. Paige has confirmed via chat that she has posted on at least LinkedIn + one of (X, Reddit, PH).

@@ -34,14 +34,14 @@ Paste to Claude Code:
 - **Time:** 10 min
 
 ### 🧍 5. Sign up for Plausible
-- Go to plausible.io → add site → use your final domain (`buildcorecm.com`)
+- Go to plausible.io → add site → use your final domain (`buildcoreoperations.com`)
 - Copy the **domain name** you entered (that's all you need)
 - **Time:** 5 min
 
 ### 🧍 6. Buy + point the domain
-- Cloudflare Registrar → `buildcorecm.com` (locked per memory)
+- Cloudflare Registrar → `buildcoreoperations.com` (locked per memory)
 - Point CNAME at Railway landing service
-- Add `app.buildcorecm.com` CNAME at Railway app service (optional — or keep railway URL for app)
+- Add `app.buildcoreoperations.com` CNAME at Railway app service (optional — or keep railway URL for app)
 - **Time:** 20 min
 - **Why only you:** DNS changes need your account
 
@@ -66,7 +66,7 @@ Once you have the assets + keys, paste to Claude Code:
 > - Hero video at `public/<filename>.mp4` — update `HERO_VIDEO_SRC` in landing App.tsx
 > - Screenshots in `public/screenshots/` — mount the screenshots section between Integrations and Support
 > - Add these env vars to both Railway services (landing + app):
->   - `VITE_PLAUSIBLE_DOMAIN=buildcorecm.com`
+>   - `VITE_PLAUSIBLE_DOMAIN=buildcoreoperations.com`
 >   - `VITE_BEEHIIV_PUB_ID=pub_xxxxxxxx` (landing only)
 >   - `VITE_BEEHIIV_API_KEY=xxxxxxxx` (landing only)
 > Commit to launch-prep. Don't push yet.
@@ -87,7 +87,7 @@ If clean, paste:
 - **Time:** 10–15 min (Railway deploy ~60s each, plus your sanity check)
 
 ### 🧍 12. Live-site smoke test
-- Open `buildcorecm.com` → does it load, does Founding User CTA work?
+- Open `buildcoreoperations.com` → does it load, does Founding User CTA work?
 - Open app URL → sign up with a fresh email → does "Hey, [name]" appear?
 - Open pricing section on landing → toggle monthly/annual → tiers update
 - **Time:** 5 min

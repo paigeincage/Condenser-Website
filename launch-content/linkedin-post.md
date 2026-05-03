@@ -30,7 +30,7 @@ Link in comments.
 
 **First comment (keep separate so it's clickable):**
 
-buildcorecm.com/#founding
+buildcoreoperations.com/#founding
 
 **Second comment (if anyone engages):**
 

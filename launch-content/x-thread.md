@@ -81,7 +81,7 @@ If you're in residential construction, come try it.
 
 **7/**
 
-buildcorecm.com/#founding
+buildcoreoperations.com/#founding
 
 Built by a CM in Austin. One dev. No VCs. One promise:
 

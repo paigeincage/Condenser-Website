@@ -18,7 +18,7 @@ I'm Paige. I built The Condenser because I got tired of typing up punch lists at
 
 Here's what happens next:
 
-1. **Today** — take 5 minutes and set up your first project. Walkthrough link: [buildcorecm.com/app](https://the-condenser-production.up.railway.app)
+1. **Today** — take 5 minutes and set up your first project. Walkthrough link: [buildcoreoperations.com/app](https://the-condenser-production.up.railway.app)
 2. **Sunday** — I'll send you a 3-minute Loom of how I personally use it on my own jobs. Steal whatever's useful.
 3. **Whenever you're stuck** — reply to this email. It hits my inbox. I answer within a day.
 
@@ -29,7 +29,7 @@ Welcome.
 — Paige
 (361) 389-6902 · hello@buildcore.dev
 
-**P.S.** — if anyone in your office would also benefit, forward them [buildcorecm.com/#founding](https://buildcorecm.com/#founding). Still 50 spots. I want the right 50.
+**P.S.** — if anyone in your office would also benefit, forward them [buildcoreoperations.com/#founding](https://buildcoreoperations.com/#founding). Still 50 spots. I want the right 50.
 
 ---
 

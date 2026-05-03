@@ -18,7 +18,7 @@ I've been building a punch-list tool on the side for the last few months because
 
 If you're doing closeout on a legal pad or a shared spreadsheet, I'd love a second pair of eyes on it. Founding-user trial, free for 7 days, no card. I'd rather you try it than pitch you.
 
-Link: buildcorecm.com/#founding
+Link: buildcoreoperations.com/#founding
 
 If it's useful, great. If it's not, I still owe you a beer.
 
@@ -38,7 +38,7 @@ I mentioned I was building a punch-list tool. It's live as of this week. Called 
 
 Not asking for anything. Just want people whose opinion I respect to break it before I ask strangers to trust it.
 
-buildcorecm.com/#founding if you want to poke at it. DM me if you'd rather I just send you a Loom.
+buildcoreoperations.com/#founding if you want to poke at it. DM me if you'd rather I just send you a Loom.
 
 — Paige
 
@@ -52,7 +52,7 @@ I built a punch-list tool because I was doing closeouts until midnight. Shipped 
 
 If you're still on paper for punch, this is maybe 20 minutes of your night back per closeout. Happy to walk you through it live if you'd rather.
 
-buildcorecm.com/#founding
+buildcoreoperations.com/#founding
 
 ---
 
@@ -68,7 +68,7 @@ I launched my punch-list tool this week (The Condenser — voice-driven closeout
 
 If there's one person in your world — a CM, super, PM on the residential side — who'd be a good fit, would you forward them this?
 
-buildcorecm.com/#founding
+buildcoreoperations.com/#founding
 
 That's it. I owe you whatever you want in return — intro, lunch, a frank critique of anything you're working on.
 

@@ -56,7 +56,7 @@ If you're a CM or super and you're still playing phone tag on update day, try it
 
 When someone asks what you're using:
 
-> It's a tool I built called The Condenser. Offline-first PWA, so it works on lots with zero signal. Free tier to try. Landing page is buildcorecm.com — I can send you a founding-user link if you want to see it, we're still letting people shape the roadmap.
+> It's a tool I built called The Condenser. Offline-first PWA, so it works on lots with zero signal. Free tier to try. Landing page is buildcoreoperations.com — I can send you a founding-user link if you want to see it, we're still letting people shape the roadmap.
 
 When someone pushes back ("this is just Procore"):
 
