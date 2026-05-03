@@ -12,7 +12,7 @@ import { subscribe } from "./lib/beehiiv"
 
 const COMPANY = "BuildCore"
 const PRODUCT = "The Condenser"
-const APP_URL = "https://the-condenser-production.up.railway.app/home"
+const APP_URL = "https://condenser-app-production.up.railway.app/home"
 
 // Hero video integration path — set to a public asset (e.g. "/hero.mp4") when available.
 // When null, hero falls back to the interactive phone layout below.
